@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "solo-recognition"
+version = "0.1.0"
+description = "Frozen DINO + CPU MaskCut throughput baseline"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "torch==2.7.1",
+  "numpy==2.2.6",
+  "scipy==1.16.3",
+  "pillow==11.3.0",
+  "psutil==7.0.0",
+  "tqdm==4.67.1",
+  "threadpoolctl==3.6.0",
+]
+
+[dependency-groups]
+dev = ["pytest==8.4.1", "ruff==0.12.12"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/solo"]
+
+[tool.uv]
+default-groups = []
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["src/solo/vendor"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["model: uses the real local pretrained DINO checkpoint"]

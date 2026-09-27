@@ -1,0 +1,15 @@
+# Local CLI correctness check only. Never activates a full-generation config.
+# Point at a small, read-only folder containing natural images.
+[dino]
+device = "cpu"
+resolution = 384
+
+[benchmark]
+smoke_images = 4
+scaling_images = 4
+confirmation_images = 4
+repeats = 2
+min_stability_ratio = 0.5
+batch_sizes = [1, 2]
+worker_counts = [1, 2]
+preview_images = 4

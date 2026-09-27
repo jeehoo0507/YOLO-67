@@ -1,0 +1,159 @@
+# SOLO
+
+Milestone 1: **unlabeled images → frozen DINO ViT-S/16 → CPU MaskCut → single-class YOLO boxes**.
+ImageNet directory names are only file identifiers. No ImageNet labels or annotations are loaded.
+
+## 서버에서 실행
+
+서버에는 기존 `uv` executable과 NVIDIA driver만 필요합니다. Linux x86_64를 GPU 실행
+대상으로 합니다. Python 3.11.13, PyTorch 2.7.1와 CUDA 12.6 user-space dependencies는
+`uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
+NVIDIA driver와 외부 ImageNet은 변경하지 않습니다.
+
+```bash
+git pull --ff-only
+./solo doctor
+./solo benchmark /mnt/data/imagenet/train
+./solo generate /mnt/data/imagenet/train
+```
+
+`./solo`는 환경 변수를 설정하고 `uv run --frozen`으로 필요한 환경을 자동 동기화합니다.
+`.venv` 활성화나 별도 Python 명령은 필요 없습니다. 첫 실행은 패키지와 공식 DINO
+checkpoint를 다운로드하므로 네트워크가 필요합니다. 체크포인트는 SHA256 검증 후 사용합니다.
+
+기본 설정은 [configs/baseline.toml](configs/baseline.toml)에 있습니다. 변경한 별도 TOML은
+`./solo benchmark DATASET --config configs/custom.toml`로 사용합니다. `generate`에도 같은
+config를 지정합니다. 알 수 없는 설정 이름은 에러로 처리합니다.
+
+## Benchmark
+
+1. 전체 이미지 목록을 읽고 relative path hash + seed로 deterministic subset을 고릅니다.
+   class 폴더별로 첫 이미지들만 고르는 편향을 피합니다.
+2. 실제 이미지 100장으로 decode, pretrained features, MaskCut, bbox, YOLO 파일·receipt
+   재검증, JPEG preview를 확인합니다. Smoke 실패나 모든 이미지에서 zero-box면 중단합니다.
+3. 같은 1,000장을 workers × batch 조합마다 **2회 새로 처리**합니다. 기존 라벨을 skip하지
+   않습니다. worker 수는 physical/effective core, affinity, Linux cgroup quota와 RAM으로
+   제한합니다. batch는 8/16/32/64/128을 순서대로 탐색하며 CUDA OOM 후 더 큰 batch를
+   시도하지 않습니다. 후보별 성공 여부와 오류는 보존합니다.
+4. 반복 throughput의 min/max가 0.85 이상인 후보 중 **최저 반복 throughput**이 가장 높은
+   조합을 고릅니다. 최고 순간 GPU 속도는 선택 기준이 아닙니다.
+5. 선택한 조합으로 10,000장을 다시 처리합니다. 평균 img/s, elapsed, ImageNet 전체 예상
+   시간, 14.83 img/s 기준 PASS/FAIL을 출력합니다. 속도 FAIL은 실행 실패가 아닙니다.
+   이미지 처리 오류가 있으면 best config를 활성화하지 않습니다.
+
+CPU만 있는 환경에서도 correctness 검증은 가능합니다. 축소된 테스트 config를 쓸 수 있지만
+**10k confirmation과 2회 반복을 완료한 설정만** full generation의 기본 설정이 됩니다.
+GPU가 없는 결과는 리포트에 CPU 테스트로 표시됩니다. 실제 A5000 성능은 서버 결과로 판단합니다.
+
+timed wall은 image decode 시작부터 DINO, queue/IPC, MaskCut, bbox, label/receipt atomic
+write, 마지막 worker drain까지 포함합니다. discovery, 프로세스 준비와 kernel warmup,
+resume 검사는 별도 기록합니다. stage ms/image는 병렬 worker의 누적 service time이므로
+합산하면 elapsed와 같지 않습니다. 파일시스템 cache를 강제로 비우지 않습니다. 10k
+confirmation은 캐시를 포함한 실행 결과이며 더 큰 데이터셋의 sustained IO는 달라질 수 있습니다.
+
+단일 GPU owner process가 batched DINO를 실행하고 CPU-only spawn worker pool에 feature를
+보냅니다. decode thread prefetch와 완료 callback을 사용하며 feature backlog는
+`workers + queue_batches × batch`로 제한합니다. CPU worker는 CUDA를 사용하지 않고 BLAS
+thread 수를 1로 고정합니다. 무한 queue나 이미지별 GPU worker를 만들지 않습니다.
+
+## 출력과 resume
+
+```text
+pseudo/imagenet/
+├── labels/<relative-image-stem>.txt
+├── receipts/<relative-image-path>.json
+└── .generation.lock
+```
+
+예: `n01440764/abc.JPEG` → `labels/n01440764/abc.txt`. 같은 폴더에서 동일 stem의 JPG/PNG가
+겹치면 discovery에서 충돌을 명시하고 중단하므로 라벨을 덮어쓰지 않습니다. Milestone 2에서
+원본 이미지를 복사하지 않는 YOLO dataset adapter를 연결할 예정입니다.
+
+```text
+0 0.43120000 0.52210000 0.31500000 0.40120000
+```
+
+모든 클래스는 `0 = object`입니다. 이미지 전체를 384×384로 resize하고 mask의 patch 경계를
+원본 이미지의 normalized 좌표로 환산합니다. aspect ratio 필터와 quality 통계는 원본 pixel
+크기를 사용합니다. CRF, segmentation boundary refinement, DINO fine-tuning은 없습니다.
+
+같은 `./solo generate ...` 명령으로 재시작합니다. 각 이미지의 source size/mtime,
+dataset root, algorithm/config fingerprint, label SHA256, row 형식, box 개수를 검증합니다.
+정상적인 zero-box 파일도 완료 receipt가 있어야 skip합니다. 빈 파일만 남거나 잘린 JSON,
+checksum 불일치, 설정 변경은 해당 이미지만 다시 처리합니다. 라벨과 receipt는 같은 디렉터리의
+temporary file에 쓰고 fsync + atomic rename합니다. receipt가 이미지별 완료 시점입니다.
+단일 central state 파일의 손상 때문에 완료 작업을 잃지 않습니다.
+
+첫 화면에서 완료된 이미지 수를 복구한 뒤 남은 이미지를 처리합니다. average/rolling img/s는
+이번 실행에서 새로 성공한 이미지만 사용하므로 resume skip으로 부풀려지지 않습니다.
+원본 크기 변경 검출은 size/mtime 기반이며 원본 내용 전체를 hashing하지 않습니다.
+단일 output 디렉터리에는 advisory lock을 사용합니다. Ctrl+C / 종료 후 다시 실행하면 완료
+receipt가 있는 이미지는 유지됩니다. 손상 이미지/CPU 오류는 성공으로 기록하지 않고 retry
+대상으로 남깁니다. 오래된 `.tmp` 파일은 완료 검증에 사용하지 않습니다.
+
+`generate`는 repository의 `work/best_config.json` 또는 추적된 `reports/*/best_config.json`에서
+호환되는 10k 결과를 찾습니다. 모델·MaskCut·filter 설정, GPU/VRAM/CUDA runtime, 안전한 worker
+limit, decode/queue/fsync 정책이 맞지 않으면 새 benchmark를 요구합니다.
+
+## 작은 실험 결과만 Git으로 전달
+
+```text
+reports/<UTC-run-id>/
+├── summary.md
+├── benchmark.json
+├── benchmark.csv
+├── best_config.json
+├── system_info.txt
+├── subset.json
+└── pseudo_preview.jpg
+```
+
+리포트에는 Git SHA/dirty 여부, command, 전체 configuration, system/model 정보, 반복별
+throughput, DINO/MaskCut/IO/bbox timing, queue/backpressure, peak allocated VRAM, best 설정,
+품질 histogram, 대표 JPEG grid, errors/warnings가 들어갑니다. 병목은 누적 worker service /
+workers와 producer wall의 비교로 **추정**하며 GPU utilization 측정치로 오해하지 않도록 표시합니다.
+preview는 기본 64장으로 하나의 JPEG에 합칩니다. 대용량 라벨과 원본 이미지는 report에 복사하지
+않습니다. 실패한 실행도 가능한 범위에서 partial report를 남깁니다.
+
+서버에서는 source code를 편집할 필요 없이 다음과 같이 결과만 공유합니다.
+
+```bash
+git add reports
+git commit -m "exp: A5000 ImageNet pseudo benchmark"
+git push
+```
+
+후속 분석 시 `summary.md`와 `benchmark.json`을 먼저 확인합니다. ImageNet 이미지 수는
+config의 1,281,167 기준으로 예상 시간을 계산하고 실제 발견한 이미지 수도 기록합니다.
+
+## 프로젝트 격리
+
+환경 `.venv`, uv cache `.uv-cache`, 관리 Python `.uv-python`, Torch/HF cache `.cache`,
+Ultralytics/XDG config `.config`, weight `weights`, temporary files `work/tmp`, pseudo labels
+`pseudo`가 모두 repository 아래입니다. wrapper는 XDG data/state, uv tools, matplotlib와
+Python bytecode cache도 redirect합니다. `OMP/MKL/OPENBLAS_NUM_THREADS=1`이 기본입니다.
+global package 설치, global model cache, conda, sudo는 사용하지 않습니다. 외부 입력을 복사하거나
+수정하지 않습니다. 기존 uv executable은 관리하지 않습니다.
+
+## 검증 및 다음 milestone
+
+```bash
+./solo test -q
+./solo check src tests
+```
+
+테스트는 spectral discovery, key-feature equivalence, normalized bbox, filter, single-class row,
+atomic write interruption, 손상/빈 receipt, parallel batching, resume, OOM, worker scaling과
+안정성 선택을 확인합니다. 실제 checkpoint 테스트는 이미 다운로드된 weight가 있을 때 실행하며
+테스트만으로 weight를 다운로드하지 않습니다.
+
+root `./solo` 파일과 Python package 디렉터리 이름 충돌을 피하기 위해 module은 `src/solo/`에
+둡니다. DINO는 `DenseBackbone` 계약, CPU discovery는 `discover_masks`, 저장은 `LabelStore`로
+분리되어 있습니다.
+
+`./solo train`과 `./solo infer --support ... --query ...`는 다음 milestone을 위한 예약 명령입니다.
+Milestone 1의 실제 서버 benchmark와 품질이 확인된 뒤 YOLO11n (640, single-class object)를
+학습하고, query당 한 번의 dense DINO forward + ROI pooling + prototype cosine matching을
+추가합니다. 현재 명령은 미구현임을 명시하고 종료하며 가짜 학습/추론 결과를 만들지 않습니다.
+
+공식 소스와 라이선스는 [THIRD_PARTY.md](THIRD_PARTY.md)에 기록합니다.
