@@ -1,0 +1,1325 @@
+{
+  "schema_version": 1,
+  "run_id": "20260927T154429Z-benchmark-1fa03f",
+  "kind": "benchmark",
+  "status": "complete",
+  "created_utc": "2026-09-27T15:44:29.806495+00:00",
+  "git": {
+    "commit_sha": "8da9b445698b87e9c575f69f3609941f6dbb373b",
+    "branch": "codex/milestone-1",
+    "dirty": false
+  },
+  "command": "./solo benchmark /Users/choejihu/Documents/ChatGPT/SOLO/data/local-smoke --config configs/cpu-smoke.toml",
+  "configuration": {
+    "dino": {
+      "model": "dino_vits16",
+      "resolution": 384,
+      "device": "cpu",
+      "mixed_precision": true
+    },
+    "maskcut": {
+      "tau": 0.15,
+      "epsilon": 1e-05,
+      "max_objects": 2,
+      "min_mask_area": 0.01,
+      "max_mask_iou": 0.5,
+      "crf": false
+    },
+    "filtering": {
+      "min_box_area": 0.005,
+      "max_box_area": 0.95,
+      "max_aspect_ratio": 10.0,
+      "duplicate_iou": 0.9
+    },
+    "pipeline": {
+      "output_dir": "pseudo/imagenet",
+      "decode_workers": 4,
+      "queue_batches": 2,
+      "progress_interval": 1.0,
+      "rolling_seconds": 30.0,
+      "fsync": true,
+      "seed": 0
+    },
+    "benchmark": {
+      "smoke_images": 4,
+      "scaling_images": 4,
+      "confirmation_images": 4,
+      "repeats": 2,
+      "min_stability_ratio": 0.5,
+      "batch_sizes": [
+        1,
+        2
+      ],
+      "worker_counts": [
+        1,
+        2
+      ],
+      "max_workers": 0,
+      "preview_images": 4,
+      "imagenet_images": 1281167,
+      "target_images_per_sec": 14.83
+    }
+  },
+  "system": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": null,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 28155772928,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "dataset_root": "/Users/choejihu/Documents/ChatGPT/SOLO/data/local-smoke",
+  "runs": [
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6752259589993628,
+      "throughput_images_per_sec": 5.923942861923908,
+      "timing_seconds": {
+        "decode_seconds": 0.5382674590036913,
+        "dino_seconds": 0.5091519570014498,
+        "maskcut_seconds": 0.13532429199767648,
+        "bbox_seconds": 0.00015141699986997992,
+        "write_seconds": 0.005162374000065029,
+        "queue_seconds": 0.0039018750030663796,
+        "backpressure_seconds": 2.4990040401462466e-06,
+        "decode_wait_seconds": 0.11043774900099379
+      },
+      "timing_ms_per_image": {
+        "decode": 134.56686475092283,
+        "dino": 127.28798925036244,
+        "maskcut": 33.83107299941912,
+        "bbox": 0.03785424996749498,
+        "write": 1.2905935000162572,
+        "queue": 0.9754687507665949,
+        "backpressure": 0.0006247510100365616,
+        "decode_wait": 27.609437250248448
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 1,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.3777990000016871,
+      "recovery_seconds": 0.006044000001566019,
+      "stage": "smoke",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6737454580033955,
+      "throughput_images_per_sec": 5.936960245867574,
+      "timing_seconds": {
+        "decode_seconds": 0.5270345820026705,
+        "dino_seconds": 0.5143826650019037,
+        "maskcut_seconds": 0.11460975099544157,
+        "bbox_seconds": 0.00016012400374165736,
+        "write_seconds": 0.005183875000511762,
+        "queue_seconds": 0.003200958002707921,
+        "backpressure_seconds": 1.6260055417660624e-06,
+        "decode_wait_seconds": 0.10521937500016065
+      },
+      "timing_ms_per_image": {
+        "decode": 131.75864550066763,
+        "dino": 128.59566625047592,
+        "maskcut": 28.652437748860393,
+        "bbox": 0.04003100093541434,
+        "write": 1.2959687501279404,
+        "queue": 0.8002395006769802,
+        "backpressure": 0.0004065013854415156,
+        "decode_wait": 26.304843750040163
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 1,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.35662316699745134,
+      "recovery_seconds": 5.020899698138237e-05,
+      "stage": "scaling",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6705197079973004,
+      "throughput_images_per_sec": 5.965521896361776,
+      "timing_seconds": {
+        "decode_seconds": 0.5265322510058468,
+        "dino_seconds": 0.511093458000687,
+        "maskcut_seconds": 0.12754541800313746,
+        "bbox_seconds": 0.00015583200001856312,
+        "write_seconds": 0.005138958997122245,
+        "queue_seconds": 0.003517331995681161,
+        "backpressure_seconds": 1.6649973986204714e-06,
+        "decode_wait_seconds": 0.10573033299806411
+      },
+      "timing_ms_per_image": {
+        "decode": 131.6330627514617,
+        "dino": 127.77336450017174,
+        "maskcut": 31.886354500784364,
+        "bbox": 0.03895800000464078,
+        "write": 1.2847397492805612,
+        "queue": 0.8793329989202903,
+        "backpressure": 0.00041624934965511784,
+        "decode_wait": 26.43258324951603
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 1,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.363546167001914,
+      "recovery_seconds": 4.199999966658652e-05,
+      "stage": "scaling",
+      "repeat": 1,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6721217500016792,
+      "throughput_images_per_sec": 5.951302721553062,
+      "timing_seconds": {
+        "decode_seconds": 0.5257767490002152,
+        "dino_seconds": 0.5122131249991071,
+        "maskcut_seconds": 0.11647200000516023,
+        "bbox_seconds": 0.00017424999896320514,
+        "write_seconds": 0.005841874997713603,
+        "queue_seconds": 0.003358208999998169,
+        "backpressure_seconds": 1.5830009942874312e-06,
+        "decode_wait_seconds": 0.10464899999715271
+      },
+      "timing_ms_per_image": {
+        "decode": 131.4441872500538,
+        "dino": 128.05328124977677,
+        "maskcut": 29.118000001290056,
+        "bbox": 0.043562499740801286,
+        "write": 1.4604687494284008,
+        "queue": 0.8395522499995423,
+        "backpressure": 0.0003957502485718578,
+        "decode_wait": 26.16224999928818
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 2,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.3784674159978749,
+      "recovery_seconds": 4.150000313529745e-05,
+      "stage": "scaling",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6730309999984456,
+      "throughput_images_per_sec": 5.9432626431906375,
+      "timing_seconds": {
+        "decode_seconds": 0.5244645409984514,
+        "dino_seconds": 0.5149685840042366,
+        "maskcut_seconds": 0.1175774170042132,
+        "bbox_seconds": 0.00016691599739715457,
+        "write_seconds": 0.005394792002334725,
+        "queue_seconds": 0.0032884989996091463,
+        "backpressure_seconds": 1.4169963833410293e-06,
+        "decode_wait_seconds": 0.10213020800438244
+      },
+      "timing_ms_per_image": {
+        "decode": 131.11613524961285,
+        "dino": 128.74214600105915,
+        "maskcut": 29.3943542510533,
+        "bbox": 0.04172899934928864,
+        "write": 1.3486980005836813,
+        "queue": 0.8221247499022866,
+        "backpressure": 0.0003542490958352573,
+        "decode_wait": 25.53255200109561
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 2,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.38189362499906565,
+      "recovery_seconds": 4.216600063955411e-05,
+      "stage": "scaling",
+      "repeat": 1,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.8316930830005731,
+      "throughput_images_per_sec": 4.809466474782794,
+      "timing_seconds": {
+        "decode_seconds": 0.537074373994983,
+        "dino_seconds": 0.515789417004271,
+        "maskcut_seconds": 0.11542725000253995,
+        "bbox_seconds": 0.00017883299733512104,
+        "write_seconds": 0.004850959001487354,
+        "queue_seconds": 0.06714700100201298,
+        "backpressure_seconds": 7.080052455421537e-07,
+        "decode_wait_seconds": 0.22663500100316014
+      },
+      "timing_ms_per_image": {
+        "decode": 134.26859349874576,
+        "dino": 128.94735425106774,
+        "maskcut": 28.856812500634987,
+        "bbox": 0.04470824933378026,
+        "write": 1.2127397503718385,
+        "queue": 16.786750250503246,
+        "backpressure": 0.00017700131138553843,
+        "decode_wait": 56.658750250790035
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 1,
+      "batch_size": 2,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.4949500420007098,
+      "recovery_seconds": 4.28749990533106e-05,
+      "stage": "scaling",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.827779916999134,
+      "throughput_images_per_sec": 4.832202277268083,
+      "timing_seconds": {
+        "decode_seconds": 0.5335412499989616,
+        "dino_seconds": 0.5118772079986229,
+        "maskcut_seconds": 0.1118011660000775,
+        "bbox_seconds": 0.0001487500012444798,
+        "write_seconds": 0.00454995899417554,
+        "queue_seconds": 0.06446191699797055,
+        "backpressure_seconds": 6.669979484286159e-07,
+        "decode_wait_seconds": 0.23172841599807725
+      },
+      "timing_ms_per_image": {
+        "decode": 133.3853124997404,
+        "dino": 127.96930199965573,
+        "maskcut": 27.950291500019375,
+        "bbox": 0.03718750031111995,
+        "write": 1.137489748543885,
+        "queue": 16.115479249492637,
+        "backpressure": 0.00016674948710715398,
+        "decode_wait": 57.93210399951931
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 1,
+      "batch_size": 2,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.5031341670000984,
+      "recovery_seconds": 4.175000140094198e-05,
+      "stage": "scaling",
+      "repeat": 1,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.8012738750003336,
+      "throughput_images_per_sec": 4.9920509388857015,
+      "timing_seconds": {
+        "decode_seconds": 0.5405875840006047,
+        "dino_seconds": 0.5127857489969756,
+        "maskcut_seconds": 0.128920458999346,
+        "bbox_seconds": 0.00014350000128615648,
+        "write_seconds": 0.005079332997411257,
+        "queue_seconds": 0.0047428320031031035,
+        "backpressure_seconds": 6.679983926005661e-07,
+        "decode_wait_seconds": 0.2238048750004964
+      },
+      "timing_ms_per_image": {
+        "decode": 135.14689600015117,
+        "dino": 128.1964372492439,
+        "maskcut": 32.2301147498365,
+        "bbox": 0.03587500032153912,
+        "write": 1.2698332493528142,
+        "queue": 1.1857080007757759,
+        "backpressure": 0.00016699959815014154,
+        "decode_wait": 55.9512187501241
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 2,
+      "batch_size": 2,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.5038745410020056,
+      "recovery_seconds": 3.8124999264255166e-05,
+      "stage": "scaling",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.7992281249971711,
+      "throughput_images_per_sec": 5.00482887788034,
+      "timing_seconds": {
+        "decode_seconds": 0.5454414999985602,
+        "dino_seconds": 0.5102756250016682,
+        "maskcut_seconds": 0.12844204300199635,
+        "bbox_seconds": 0.00014858299982734025,
+        "write_seconds": 0.005632374999549938,
+        "queue_seconds": 0.004373291001684265,
+        "backpressure_seconds": 6.669979484286159e-07,
+        "decode_wait_seconds": 0.23247154199998477
+      },
+      "timing_ms_per_image": {
+        "decode": 136.36037499964004,
+        "dino": 127.56890625041706,
+        "maskcut": 32.11051075049909,
+        "bbox": 0.03714574995683506,
+        "write": 1.4080937498874846,
+        "queue": 1.0933227504210663,
+        "backpressure": 0.00016674948710715398,
+        "decode_wait": 58.11788549999619
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 2,
+      "batch_size": 2,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.4954062500000873,
+      "recovery_seconds": 3.9375001506414264e-05,
+      "stage": "scaling",
+      "repeat": 1,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    {
+      "images_total": 4,
+      "images_processed": 4,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 4,
+      "elapsed_seconds": 0.6718464580008003,
+      "throughput_images_per_sec": 5.953741293662123,
+      "timing_seconds": {
+        "decode_seconds": 0.5256532919993333,
+        "dino_seconds": 0.5100336670002434,
+        "maskcut_seconds": 0.11600416500368738,
+        "bbox_seconds": 0.0001839180004026275,
+        "write_seconds": 0.005539123998460127,
+        "queue_seconds": 0.003753125998628093,
+        "backpressure_seconds": 1.5000005078036338e-06,
+        "decode_wait_seconds": 0.10493625000162865
+      },
+      "timing_ms_per_image": {
+        "decode": 131.41332299983333,
+        "dino": 127.50841675006086,
+        "maskcut": 29.001041250921844,
+        "bbox": 0.04597950010065688,
+        "write": 1.3847809996150318,
+        "queue": 0.9382814996570232,
+        "backpressure": 0.00037500012695090845,
+        "decode_wait": 26.234062500407163
+      },
+      "quality": {
+        "valid_images": 4,
+        "total_boxes": 7,
+        "mean_boxes_per_image": 1.75,
+        "median_boxes_per_image": 2.0,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 3
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            5,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            1,
+            3,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 2,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.38244516700069653,
+      "recovery_seconds": 4.962499951943755e-05,
+      "stage": "confirmation",
+      "repeat": 0,
+      "subset_sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    }
+  ],
+  "warnings": [
+    "CPU correctness run: this is not an A5000 throughput result.",
+    "Reduced confirmation: <10k images or <2 repeats; full generation requires the default server benchmark."
+  ],
+  "errors": [],
+  "timing_notes": "End-to-end timed wall includes decode, DINO + host/device transfers, queue/IPC, CPU MaskCut, bbox conversion, atomic label/receipt writes and final worker drain. Pool startup, kernel warmup, discovery and resume scanning are separately recorded. Stage ms/image are summed service times across workers and overlap; do not add them as wall time. Filesystem cache is not flushed between candidates.",
+  "discovery_seconds": 0.00022495799930766225,
+  "dataset_images": 4,
+  "subsets": {
+    "smoke": {
+      "requested": 4,
+      "actual": 4,
+      "sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    "scaling": {
+      "requested": 4,
+      "actual": 4,
+      "sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    },
+    "confirmation": {
+      "requested": 4,
+      "actual": 4,
+      "sha256": "833a2da1015686078ecbae3d8582cf301a8ab1cf21fc933bae007633cf373acd"
+    }
+  },
+  "backbone": {
+    "model": "dino_vits16",
+    "parameters": 21665664,
+    "patch_size": 16,
+    "feature_type": "last_attention_keys",
+    "frozen": true,
+    "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+    "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+    "device": "cpu",
+    "mixed_precision": false,
+    "resolution": 384,
+    "amp_float32_retry_batches": 0
+  },
+  "worker_limit": 13,
+  "candidate_workers": [
+    1,
+    2
+  ],
+  "candidate_batch_sizes": [
+    1,
+    2
+  ],
+  "preview_samples": 4,
+  "candidates": [
+    {
+      "cpu_workers": 1,
+      "batch_size": 1,
+      "ok": true,
+      "repeat_throughputs": [
+        5.936960245867574,
+        5.965521896361776
+      ],
+      "median_throughput": 5.951241071114675,
+      "stable_throughput": 5.936960245867574,
+      "stability_ratio": 0.9952122126126768
+    },
+    {
+      "cpu_workers": 2,
+      "batch_size": 1,
+      "ok": true,
+      "repeat_throughputs": [
+        5.951302721553062,
+        5.9432626431906375
+      ],
+      "median_throughput": 5.947282682371849,
+      "stable_throughput": 5.9432626431906375,
+      "stability_ratio": 0.9986490221152242
+    },
+    {
+      "cpu_workers": 1,
+      "batch_size": 2,
+      "ok": true,
+      "repeat_throughputs": [
+        4.809466474782794,
+        4.832202277268083
+      ],
+      "median_throughput": 4.820834376025438,
+      "stable_throughput": 4.809466474782794,
+      "stability_ratio": 0.9952949398264547
+    },
+    {
+      "cpu_workers": 2,
+      "batch_size": 2,
+      "ok": true,
+      "repeat_throughputs": [
+        4.9920509388857015,
+        5.00482887788034
+      ],
+      "median_throughput": 4.998439908383021,
+      "stable_throughput": 4.9920509388857015,
+      "stability_ratio": 0.9974468779439968
+    }
+  ],
+  "best_stable_throughput": 5.9432626431906375,
+  "best_config": {
+    "schema_version": 1,
+    "source_run_id": "20260927T154429Z-benchmark-1fa03f",
+    "cpu_workers": 2,
+    "batch_size": 1,
+    "fingerprint": "4c332b80de4cf6f837f8fc56d4efa52820dcbefdb0fc369f7d9984c39bb8ce43",
+    "configuration": {
+      "dino": {
+        "model": "dino_vits16",
+        "resolution": 384,
+        "device": "cpu",
+        "mixed_precision": true
+      },
+      "maskcut": {
+        "tau": 0.15,
+        "epsilon": 1e-05,
+        "max_objects": 2,
+        "min_mask_area": 0.01,
+        "max_mask_iou": 0.5,
+        "crf": false
+      },
+      "filtering": {
+        "min_box_area": 0.005,
+        "max_box_area": 0.95,
+        "max_aspect_ratio": 10.0,
+        "duplicate_iou": 0.9
+      },
+      "pipeline": {
+        "output_dir": "pseudo/imagenet",
+        "decode_workers": 4,
+        "queue_batches": 2,
+        "progress_interval": 1.0,
+        "rolling_seconds": 30.0,
+        "fsync": true,
+        "seed": 0
+      },
+      "benchmark": {
+        "smoke_images": 4,
+        "scaling_images": 4,
+        "confirmation_images": 4,
+        "repeats": 2,
+        "min_stability_ratio": 0.5,
+        "batch_sizes": [
+          1,
+          2
+        ],
+        "worker_counts": [
+          1,
+          2
+        ],
+        "max_workers": 0,
+        "preview_images": 4,
+        "imagenet_images": 1281167,
+        "target_images_per_sec": 14.83
+      }
+    },
+    "hardware": {
+      "platform": "macOS-27.0-arm64-arm-64bit",
+      "cpu": "arm",
+      "physical_cores": 14,
+      "logical_cores": null,
+      "effective_cpus": 14,
+      "ram_total_bytes": 51539607552,
+      "ram_available_bytes": 28155772928,
+      "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+      "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+      "pytorch": "2.7.1",
+      "cuda_runtime": null,
+      "numpy": "2.2.6",
+      "scipy": "1.16.3",
+      "gpus": [],
+      "thread_env": {
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "nvidia_smi": "unavailable"
+    },
+    "qualified_confirmation": false
+  },
+  "estimate": {
+    "average_throughput_images_per_sec": 5.953741293662123,
+    "imagenet_images": 1281167,
+    "estimated_imagenet_hours": 59.77413271232717,
+    "24h_target": "FAIL",
+    "target_images_per_sec": 14.83
+  },
+  "bottleneck": {
+    "major_bottleneck": "DINO / transfers",
+    "method": "Heuristic: producer wall vs aggregate worker service / workers; overlap applies",
+    "equivalent_wall_seconds": {
+      "DINO / transfers": 0.5100336670002434,
+      "CPU MaskCut": 0.05800208250184369,
+      "CPU bbox conversion": 9.195900020131376e-05,
+      "IO writes / fsync": 0.0027695619992300635,
+      "decode starvation": 0.10493625000162865
+    },
+    "producer_backpressure_ratio": 2.232653740956162e-06,
+    "mean_queue_latency_ms": 0.9382814996570232
+  },
+  "quality": {
+    "valid_images": 4,
+    "total_boxes": 7,
+    "mean_boxes_per_image": 1.75,
+    "median_boxes_per_image": 2.0,
+    "zero_box_image_ratio": 0.0,
+    "boxes_per_image_counts": {
+      "1": 1,
+      "2": 3
+    },
+    "bbox_area_distribution": {
+      "bin_edges": [
+        0.0,
+        0.005,
+        0.01,
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        0.75,
+        1.000001
+      ],
+      "counts": [
+        0,
+        0,
+        0,
+        5,
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    "bbox_aspect_ratio_distribution": {
+      "units": "width/height in original image pixels",
+      "bin_edges": [
+        0.0,
+        0.1,
+        0.25,
+        0.5,
+        1.0,
+        2.0,
+        4.0,
+        10.0,
+        1000000.0
+      ],
+      "counts": [
+        0,
+        0,
+        1,
+        3,
+        2,
+        1,
+        0,
+        0
+      ]
+    }
+  }
+}

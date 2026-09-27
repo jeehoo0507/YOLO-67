@@ -170,7 +170,7 @@ def save_report(directory: Path, payload: dict) -> None:
         "backpressure_seconds",
         "gpu_peak_vram_bytes",
     ]
-    writer = csv.DictWriter(buffer, fieldnames=names)
+    writer = csv.DictWriter(buffer, fieldnames=names, lineterminator="\n")
     writer.writeheader()
     for run in payload["runs"]:
         row = {name: run.get(name) for name in names}

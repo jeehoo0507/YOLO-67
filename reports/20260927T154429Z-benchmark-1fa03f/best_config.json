@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "source_run_id": "20260927T154429Z-benchmark-1fa03f",
+  "cpu_workers": 2,
+  "batch_size": 1,
+  "fingerprint": "4c332b80de4cf6f837f8fc56d4efa52820dcbefdb0fc369f7d9984c39bb8ce43",
+  "configuration": {
+    "dino": {
+      "model": "dino_vits16",
+      "resolution": 384,
+      "device": "cpu",
+      "mixed_precision": true
+    },
+    "maskcut": {
+      "tau": 0.15,
+      "epsilon": 1e-05,
+      "max_objects": 2,
+      "min_mask_area": 0.01,
+      "max_mask_iou": 0.5,
+      "crf": false
+    },
+    "filtering": {
+      "min_box_area": 0.005,
+      "max_box_area": 0.95,
+      "max_aspect_ratio": 10.0,
+      "duplicate_iou": 0.9
+    },
+    "pipeline": {
+      "output_dir": "pseudo/imagenet",
+      "decode_workers": 4,
+      "queue_batches": 2,
+      "progress_interval": 1.0,
+      "rolling_seconds": 30.0,
+      "fsync": true,
+      "seed": 0
+    },
+    "benchmark": {
+      "smoke_images": 4,
+      "scaling_images": 4,
+      "confirmation_images": 4,
+      "repeats": 2,
+      "min_stability_ratio": 0.5,
+      "batch_sizes": [
+        1,
+        2
+      ],
+      "worker_counts": [
+        1,
+        2
+      ],
+      "max_workers": 0,
+      "preview_images": 4,
+      "imagenet_images": 1281167,
+      "target_images_per_sec": 14.83
+    }
+  },
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": null,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 28155772928,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "qualified_confirmation": false
+}
