@@ -3,23 +3,44 @@
 Milestone 1: **unlabeled images → frozen DINO ViT-S/16 → CPU MaskCut → single-class YOLO boxes**.
 ImageNet directory names are only file identifiers. No ImageNet labels or annotations are loaded.
 
-## 서버에서 실행
+## 서버에서 처음 실행
 
-서버에는 기존 `uv` executable과 NVIDIA driver만 필요합니다. Linux x86_64를 GPU 실행
-대상으로 합니다. Python 3.11.13, PyTorch 2.7.1와 CUDA 12.6 user-space dependencies는
-`uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
-NVIDIA driver와 외부 ImageNet은 변경하지 않습니다.
+서버에 `uv` 실행 파일, NVIDIA driver, ImageNet train 이미지가 준비되어 있으면 아래 세 줄로
+시작합니다. **`/mnt/data/imagenet/train`은 실제 ImageNet 이미지 경로로 바꾸세요.** 첫 실행에는
+Python 패키지와 DINO checkpoint 다운로드를 위한 네트워크가 필요합니다.
 
 ```bash
-git pull --ff-only
-./solo doctor
+git clone https://github.com/jeehoo0507/YOLO-67.git
+cd YOLO-67
 ./solo benchmark /mnt/data/imagenet/train
+```
+
+`./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
+worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까지 실행합니다.
+터미널 마지막에 report 경로와 평균 img/s, ImageNet 전체 예상 시간, 24시간 PASS/FAIL이 나옵니다.
+**처음에는 benchmark만 실행해 결과를 확인하세요.** Git으로 결과를 전달할 때:
+
+```bash
+git add reports
+git commit -m "exp: A5000 ImageNet pseudo benchmark"
+git push
+```
+
+결과를 확인한 뒤 전체 pseudo-label을 만들 때는 같은 이미지 경로로 실행합니다. 중단되면
+같은 명령을 다시 실행해 완료된 이미지부터 이어갑니다.
+
+```bash
 ./solo generate /mnt/data/imagenet/train
 ```
 
+나중에 코드를 업데이트할 때는 `git pull --ff-only` 후 같은 `./solo` 명령을 사용합니다.
+환경 확인만 하려면 `./solo doctor`를 실행할 수 있습니다.
+
 `./solo`는 환경 변수를 설정하고 `uv run --frozen`으로 필요한 환경을 자동 동기화합니다.
-`.venv` 활성화나 별도 Python 명령은 필요 없습니다. 첫 실행은 패키지와 공식 DINO
-checkpoint를 다운로드하므로 네트워크가 필요합니다. 체크포인트는 SHA256 검증 후 사용합니다.
+`.venv` 활성화나 별도 Python 명령은 필요 없습니다. Linux x86_64를 GPU 실행 대상으로
+합니다. Python 3.11.13, PyTorch 2.7.1과 CUDA 12.6 user-space dependencies는
+`uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
+NVIDIA driver와 외부 ImageNet은 변경하지 않습니다. DINO checkpoint는 SHA256 검증 후 사용합니다.
 
 기본 설정은 [configs/baseline.toml](configs/baseline.toml)에 있습니다. 변경한 별도 TOML은
 `./solo benchmark DATASET --config configs/custom.toml`로 사용합니다. `generate`에도 같은
