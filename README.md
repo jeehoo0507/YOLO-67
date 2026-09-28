@@ -189,7 +189,9 @@ git push
 환경 `.venv`, uv cache `.uv-cache`, 관리 Python `.uv-python`, Torch/HF cache `.cache`,
 Ultralytics/XDG config `.config`, weight `weights`, temporary files `work/tmp`, pseudo labels
 `pseudo`가 모두 repository 아래입니다. wrapper는 XDG data/state, uv tools, matplotlib와
-Python bytecode cache도 redirect합니다. `OMP/MKL/OPENBLAS_NUM_THREADS=1`이 기본입니다.
+Python bytecode cache, NVIDIA CUDA JIT cache, PyTorch/Triton compile cache도 redirect합니다.
+활성화된 외부 Python/conda 환경 변수는 wrapper 안에서 해제합니다.
+`OMP/MKL/OPENBLAS_NUM_THREADS=1`이 기본입니다.
 global package 설치, global model cache, conda, sudo는 사용하지 않습니다. benchmark와
 generate에 전달한 외부 ImageNet 경로는 읽기만 합니다. 기존 uv executable은 관리하지
 않습니다. ImageNet 다운로드는 Python
