@@ -15,7 +15,13 @@ def main(argv: list[str] | None = None) -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     for name in ("benchmark", "generate"):
         command = commands.add_parser(name)
-        command.add_argument("dataset", type=Path, help="Read-only image directory")
+        command.add_argument(
+            "dataset",
+            type=Path,
+            nargs="?",
+            default=ROOT / "data/imagenet/train",
+            help="Image directory (default: data/imagenet/train inside this repository)",
+        )
         command.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
     commands.add_parser("doctor", help="Print environment and hardware without model downloads")
     commands.add_parser("train", help="Reserved for Milestone 2: single-class YOLO11n")

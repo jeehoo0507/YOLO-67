@@ -44,7 +44,10 @@ def scan_images(root: Path) -> list[ImageRecord]:
             label_keys.add(record.key)
             records.append(record)
     if not records:
-        raise ValueError(f"No supported images found below {root}")
+        raise ValueError(
+            f"No images found in {root}. Put ImageNet train images there "
+            "or pass an existing image directory to ./solo benchmark."
+        )
     return records
 
 

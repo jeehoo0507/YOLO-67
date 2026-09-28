@@ -6,7 +6,12 @@
 .local/
 weights/
 checkpoints/
-data/
+data/*
+!data/imagenet/
+data/imagenet/*
+!data/imagenet/train/
+data/imagenet/train/*
+!data/imagenet/train/.gitkeep
 work/
 outputs/
 pseudo/
