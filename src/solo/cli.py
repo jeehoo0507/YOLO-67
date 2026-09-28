@@ -23,6 +23,10 @@ def main(argv: list[str] | None = None) -> int:
             help="Image directory (default: data/imagenet/train inside this repository)",
         )
         command.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+    download = commands.add_parser("download", help="Download and prepare official ImageNet train")
+    download.add_argument(
+        "--archive", type=Path, help="Extract an existing official ILSVRC2012_img_train.tar"
+    )
     commands.add_parser("doctor", help="Print environment and hardware without model downloads")
     commands.add_parser("train", help="Reserved for Milestone 2: single-class YOLO11n")
     infer = commands.add_parser("infer", help="Reserved for Milestone 3: few-shot ROI matching")
@@ -43,6 +47,10 @@ def main(argv: list[str] | None = None) -> int:
             from .system_info import system_info
 
             print(json.dumps(system_info(), indent=2))
+        elif args.command == "download":
+            from .download import download_imagenet
+
+            download_imagenet(args.archive)
         else:
             config = load_config(args.config)
             if args.command == "benchmark":

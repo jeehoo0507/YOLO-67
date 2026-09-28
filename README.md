@@ -5,17 +5,19 @@ ImageNet directory names are only file identifiers. No ImageNet labels or annota
 
 ## 서버에서 처음 실행
 
-서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. 그다음 ImageNet train
-이미지를 **`YOLO-67/data/imagenet/train/`** 안에 넣으세요. `train/` 폴더는 clone 직후
-이미 만들어져 있습니다. ImageNet이 class별 하위 폴더로 정리되어 있어도 그대로 둡니다.
-이미지 파일은 `.gitignore` 대상이므로 GitHub에 올라가지 않습니다. 첫 실행에는 Python
-패키지와 DINO checkpoint 다운로드를 위한 네트워크가 필요합니다.
+서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. `./solo download`는
+[공식 ImageNet 서버](https://image-net.org/challenges/LSVRC/2012/2012-downloads)에서
+ILSVRC2012 train TAR(147.9 GB)을 저장소 안으로 다운로드하고, checksum을 검증한 뒤
+train 이미지 1,281,167장을 `data/imagenet/train/`에 풉니다. 다운로드는 중단 후 같은
+명령으로 이어받을 수 있습니다. 원본 TAR과 추출 이미지가 동시에 존재하므로 수백 GB의
+여유 공간이 필요합니다. 완료되면 다운로드한 TAR은 제거합니다. 다운로드 URL은 현재
+직접 접근 가능함을 확인했지만, 공식 서버의 접근 정책이 바뀌면 별도 승인이 필요할 수 있습니다.
+ImageNet의 [이용 조건](https://www.image-net.org/download.php)을 확인하세요.
 
 ```bash
 git clone https://github.com/jeehoo0507/YOLO-67.git
 cd YOLO-67
-# ImageNet train 이미지를 data/imagenet/train/ 에 넣은 다음:
-./solo benchmark && ./solo generate
+./solo download && ./solo benchmark && ./solo generate
 ```
 
 `./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
@@ -29,7 +31,7 @@ worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까
 ```bash
 cd YOLO-67
 git pull --ff-only
-./solo benchmark && ./solo generate
+./solo download && ./solo benchmark && ./solo generate
 ```
 
 benchmark 리포트를 먼저 확인하고 전체 처리 여부를 결정하려면 `./solo benchmark`만 실행한 뒤
@@ -55,10 +57,14 @@ git push
 합니다. Python 3.11.13, PyTorch 2.7.1과 CUDA 12.6 user-space dependencies는
 `uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
 NVIDIA driver는 변경하지 않습니다. DINO checkpoint는 SHA256 검증 후 사용합니다.
-`data/imagenet/train/` 이미지는 SOLO가 읽기만 합니다. 이미지를 저장소 안에 넣었다면
-저장소 폴더를 삭제할 때 이미지도 함께 삭제되므로 원본 보관 위치를 확인하세요.
-기존 외부 ImageNet 경로를 직접 쓰고 싶다면 `./solo benchmark /실제/경로`처럼 경로를
-명시할 수도 있습니다. SOLO는 외부 데이터를 자동 복사하거나 다운로드하지 않습니다.
+`./solo download`가 받은 데이터는 `data/imagenet/train/`에 준비하며, 저장소를 삭제하면
+다운로드 데이터도 함께 삭제됩니다. 기존 외부 ImageNet 데이터는 읽기 전용으로
+`./solo benchmark /실제/경로 && ./solo generate /실제/경로`처럼 쓸 수 있습니다.
+이 경우 외부 데이터는 복사·수정하지 않습니다. 이미 받은 공식
+`ILSVRC2012_img_train.tar`가 있다면 `./solo download --archive /실제/파일`로 저장소 안에
+압축 해제할 수 있습니다. 이 명령은 원본 archive를 삭제하지 않습니다. class label과
+annotation은 사용하지 않습니다. 공식 URL 접근이 막히면 ImageNet 사이트에 로그인해
+train TAR을 직접 받은 뒤 `--archive`로 준비하세요.
 
 기본 설정은 [configs/baseline.toml](configs/baseline.toml)에 있습니다. 변경한 별도 TOML은
 `./solo benchmark --config configs/custom.toml`로 사용합니다. `generate`에도 같은
@@ -171,8 +177,10 @@ config의 1,281,167 기준으로 예상 시간을 계산하고 실제 발견한 
 Ultralytics/XDG config `.config`, weight `weights`, temporary files `work/tmp`, pseudo labels
 `pseudo`가 모두 repository 아래입니다. wrapper는 XDG data/state, uv tools, matplotlib와
 Python bytecode cache도 redirect합니다. `OMP/MKL/OPENBLAS_NUM_THREADS=1`이 기본입니다.
-global package 설치, global model cache, conda, sudo는 사용하지 않습니다. 외부 입력을 복사하거나
-수정하지 않습니다. 기존 uv executable은 관리하지 않습니다.
+global package 설치, global model cache, conda, sudo는 사용하지 않습니다. benchmark와
+generate에 전달한 외부 ImageNet 경로는 읽기만 합니다. 기존 uv executable은 관리하지
+않습니다. ImageNet 다운로드는 Python
+표준 라이브러리만 사용하며 별도 downloader 설치나 전역 인증 설정이 필요하지 않습니다.
 
 ## 검증 및 다음 milestone
 
