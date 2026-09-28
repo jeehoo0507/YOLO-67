@@ -40,6 +40,15 @@ git pull --ff-only
 ./solo download && ./solo benchmark && ./solo generate
 ```
 
+**라벨 생성이 끝난 뒤 바운딩 박스 예시 보기:**
+
+```bash
+./solo preview
+```
+
+결과 이미지는 `reports/pseudo_preview.jpg`에 저장됩니다. GitHub에서도 보려면 아래
+`git add reports` → `git commit` → `git push` 명령으로 결과를 올리세요.
+
 benchmark 리포트를 먼저 확인하고 전체 처리 여부를 결정하려면 `./solo benchmark`만 실행한 뒤
 아래 `./solo generate`를 따로 실행하세요. 실험 결과를 Git으로 전달할 때:
 
