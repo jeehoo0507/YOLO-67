@@ -15,28 +15,39 @@ ImageNet directory names are only file identifiers. No ImageNet labels or annota
 git clone https://github.com/jeehoo0507/YOLO-67.git
 cd YOLO-67
 # ImageNet train 이미지를 data/imagenet/train/ 에 넣은 다음:
-./solo benchmark
+./solo benchmark && ./solo generate
 ```
 
 `./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
 worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까지 실행합니다.
 터미널 마지막에 report 경로와 평균 img/s, ImageNet 전체 예상 시간, 24시간 PASS/FAIL이 나옵니다.
-**처음에는 benchmark만 실행해 결과를 확인하세요.** Git으로 결과를 전달할 때:
+`&&`는 benchmark가 성공적으로 끝났을 때만 전체 이미지 처리(`generate`)를 시작합니다.
+**24시간 목표 FAIL은 속도 평가일 뿐 명령 실패가 아니므로, 이 경우에도 generate가 이어집니다.**
+
+이미 클론한 서버라면 다시 클론하지 말고 최신 코드를 받은 뒤 같은 한 줄을 실행합니다.
+
+```bash
+cd YOLO-67
+git pull --ff-only
+./solo benchmark && ./solo generate
+```
+
+benchmark 리포트를 먼저 확인하고 전체 처리 여부를 결정하려면 `./solo benchmark`만 실행한 뒤
+아래 `./solo generate`를 따로 실행하세요. 실험 결과를 Git으로 전달할 때:
 
 ```bash
 git add reports
-git commit -m "exp: A5000 ImageNet pseudo benchmark"
+git commit -m "exp: ImageNet pseudo-label results"
 git push
 ```
 
-결과를 확인한 뒤 전체 pseudo-label을 만들 때는 아래 명령을 실행합니다. 중단되면
+따로 진행하거나, 전체 처리가 중단되었을 때는 아래 명령을 실행합니다. 중단되면
 같은 명령을 다시 실행해 완료된 이미지부터 이어갑니다.
 
 ```bash
 ./solo generate
 ```
 
-나중에 코드를 업데이트할 때는 `git pull --ff-only` 후 같은 `./solo` 명령을 사용합니다.
 환경 확인만 하려면 `./solo doctor`를 실행할 수 있습니다.
 
 `./solo`는 환경 변수를 설정하고 `uv run --frozen`으로 필요한 환경을 자동 동기화합니다.
