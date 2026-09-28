@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import statistics
 import time
@@ -40,6 +41,13 @@ def benchmark(dataset: Path, config: Config) -> Path:
         all_records = scan_images(dataset)
         payload["discovery_seconds"] = time.perf_counter() - scan_started
         payload["dataset_images"] = len(all_records)
+        if dataset == local_path("data/imagenet/train"):
+            download_receipt = local_path("data/imagenet/.download-complete.json")
+            if download_receipt.is_file():
+                try:
+                    payload["dataset_source"] = json.loads(download_receipt.read_text())
+                except (OSError, ValueError):
+                    payload["warnings"].append("ImageNet subset receipt is unreadable")
         b = config.benchmark
         count = max(b.smoke_images, b.scaling_images, b.confirmation_images)
         records = deterministic_subset(all_records, count, config.pipeline.seed)
@@ -171,7 +179,7 @@ def benchmark(dataset: Path, config: Config) -> Path:
             best["cpu_workers"],
             best["batch_size"],
         )
-        payload["estimate"] = estimate(result, config)
+        payload["estimate"] = estimate(result, config, len(all_records))
         payload["bottleneck"] = bottleneck(result)
         payload["quality"] = result["quality"]
         payload["preview_samples"] = preview(
@@ -222,5 +230,11 @@ def print_confirmation(result: dict, outcome: dict, requested: int) -> None:
     print(f"Images processed: {result['images_processed']} / {requested}")
     print(f"Elapsed: {duration(result['elapsed_seconds'])}")
     hours = outcome["estimated_imagenet_hours"]
+    dataset_hours = outcome["estimated_dataset_hours"]
+    print(
+        f"Estimated current dataset ({outcome['dataset_images']} images): "
+        f"{f'{dataset_hours:.2f} hours' if dataset_hours is not None else 'unknown'}"
+    )
+    print(f"Current dataset 24h target: {outcome['dataset_24h_target']}")
     print(f"Estimated ImageNet total: {f'{hours:.2f} hours' if hours is not None else 'unknown'}")
-    print(f"24h target: {outcome['24h_target']}")
+    print(f"Full ImageNet 24h target: {outcome['24h_target']}")

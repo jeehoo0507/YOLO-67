@@ -96,7 +96,7 @@ def generate(dataset: Path, config: Config) -> Path:
             payload["runs"].append(result)
             payload["quality"] = result["quality"]
             if result["images_processed"]:
-                payload["estimate"] = estimate(result, config)
+                payload["estimate"] = estimate(result, config, payload.get("dataset_images"))
                 payload["bottleneck"] = bottleneck(result)
             payload["errors"].extend(e["error"] for e in result["errors"])
         if store:

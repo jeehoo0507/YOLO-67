@@ -27,6 +27,10 @@ def main(argv: list[str] | None = None) -> int:
     download.add_argument(
         "--archive", type=Path, help="Extract an existing official ILSVRC2012_img_train.tar"
     )
+    download.add_argument(
+        "--mode", choices=("auto", "full", "100gb"), default="auto",
+        help="auto probes acquisition speed; full and 100gb force a plan",
+    )
     commands.add_parser("doctor", help="Print environment and hardware without model downloads")
     commands.add_parser("train", help="Reserved for Milestone 2: single-class YOLO11n")
     infer = commands.add_parser("infer", help="Reserved for Milestone 3: few-shot ROI matching")
@@ -50,7 +54,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "download":
             from .download import download_imagenet
 
-            download_imagenet(args.archive)
+            download_imagenet(args.archive, args.mode)
         else:
             config = load_config(args.config)
             if args.command == "benchmark":

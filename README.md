@@ -5,14 +5,21 @@ ImageNet directory names are only file identifiers. No ImageNet labels or annota
 
 ## 서버에서 처음 실행
 
-서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. `./solo download`는
+서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. 데이터 출처는
+**ImageNet-1K / ILSVRC2012 train**입니다. 전체 train TAR은 **147.9 GB**이며 이미지
+1,281,167장이 1,000개 그룹에 들어 있습니다. `./solo download`는
 [공식 ImageNet 서버](https://image-net.org/challenges/LSVRC/2012/2012-downloads)에서
-ILSVRC2012 train TAR(147.9 GB)을 저장소 안으로 다운로드하고, checksum을 검증한 뒤
-train 이미지 1,281,167장을 `data/imagenet/train/`에 풉니다. 다운로드는 중단 후 같은
-명령으로 이어받을 수 있습니다. 원본 TAR과 추출 이미지가 동시에 존재하므로 수백 GB의
-여유 공간이 필요합니다. 완료되면 다운로드한 TAR은 제거합니다. 다운로드 URL은 현재
-직접 접근 가능함을 확인했지만, 공식 서버의 접근 정책이 바뀌면 별도 승인이 필요할 수 있습니다.
-ImageNet의 [이용 조건](https://www.image-net.org/download.php)을 확인하세요.
+서로 다른 세 그룹을 먼저 받아 **실제 다운로드 + 압축 해제 속도**를 측정합니다.
+20% 여유를 포함한 전체 획득 예상이 24시간 이내이고 디스크가 충분하면 전체를 받습니다.
+그렇지 않으면 1,000개 그룹 모두에서 일부 이미지를 받아 **전송량 99GB 이하**인
+ImageNet-1K subset으로 전환합니다. 부분 TAR을 읽어 완전한 JPEG만 저장하므로 큰 원본
+TAR은 만들지 않습니다. subset은 모든 그룹을 포함하지만 이미지 전체는 포함하지 않습니다.
+전송량·최종 이미지 수·예상 시간·선택 이유는 `data/imagenet/download_plan.json`과
+완료 기록에 저장됩니다. 중단 후 같은 명령을 실행하면 완료한 그룹은 건너뜁니다.
+class label과 annotation은 학습에 사용하지 않습니다. Index는
+[`assets/imagenet_train_index.json`](assets/imagenet_train_index.json)에 포함되어 있어
+서버에서 헤더 1,000개를 다시 조회하지 않습니다. [ImageNet 이용 조건](https://www.image-net.org/download.php)을
+확인하세요. 공식 서버가 부분 요청을 제공하지 않으면 전체 파일을 대신 받지 않고 중단합니다.
 
 ```bash
 git clone https://github.com/jeehoo0507/YOLO-67.git
@@ -22,7 +29,9 @@ cd YOLO-67
 
 `./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
 worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까지 실행합니다.
-터미널 마지막에 report 경로와 평균 img/s, ImageNet 전체 예상 시간, 24시간 PASS/FAIL이 나옵니다.
+터미널 마지막에 report 경로와 평균 img/s, **현재 subset 처리 예상 시간**, ImageNet-1K
+전체 128만 장으로 확장했을 때의 예상 시간이 나옵니다. 24시간 PASS/FAIL은 현재 subset과
+원래의 전체 ImageNet 목표를 각각 표시합니다.
 `&&`는 benchmark가 성공적으로 끝났을 때만 전체 이미지 처리(`generate`)를 시작합니다.
 **24시간 목표 FAIL은 속도 평가일 뿐 명령 실패가 아니므로, 이 경우에도 generate가 이어집니다.**
 
@@ -57,14 +66,16 @@ git push
 합니다. Python 3.11.13, PyTorch 2.7.1과 CUDA 12.6 user-space dependencies는
 `uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
 NVIDIA driver는 변경하지 않습니다. DINO checkpoint는 SHA256 검증 후 사용합니다.
-`./solo download`가 받은 데이터는 `data/imagenet/train/`에 준비하며, 저장소를 삭제하면
+`./solo download`가 받은 이미지는 `data/imagenet/train/`에 준비하며, 저장소를 삭제하면
 다운로드 데이터도 함께 삭제됩니다. 기존 외부 ImageNet 데이터는 읽기 전용으로
 `./solo benchmark /실제/경로 && ./solo generate /실제/경로`처럼 쓸 수 있습니다.
 이 경우 외부 데이터는 복사·수정하지 않습니다. 이미 받은 공식
-`ILSVRC2012_img_train.tar`가 있다면 `./solo download --archive /실제/파일`로 저장소 안에
-압축 해제할 수 있습니다. 이 명령은 원본 archive를 삭제하지 않습니다. class label과
-annotation은 사용하지 않습니다. 공식 URL 접근이 막히면 ImageNet 사이트에 로그인해
-train TAR을 직접 받은 뒤 `--archive`로 준비하세요.
+`ILSVRC2012_img_train.tar`가 이미 **외부 경로**에 있다면
+`./solo download --archive /실제/파일`로 같은 자동 선택을 실행할 수 있습니다.
+원본 archive는 읽기만 합니다. 강제로 전체 또는 100GB subset을 택하려면
+`./solo download --mode full` 또는 `./solo download --mode 100gb`를 사용합니다.
+이전에 저장소 안에 정상적으로 받아 둔 전체 TAR이 있으면 재사용합니다. 완료되지 않은
+`.part` 파일은 건드리지 않으며 새 부분 요청 방식에서는 사용하지 않습니다.
 
 기본 설정은 [configs/baseline.toml](configs/baseline.toml)에 있습니다. 변경한 별도 TOML은
 `./solo benchmark --config configs/custom.toml`로 사용합니다. `generate`에도 같은
@@ -82,12 +93,13 @@ config를 지정합니다. 알 수 없는 설정 이름은 에러로 처리합�
    시도하지 않습니다. 후보별 성공 여부와 오류는 보존합니다.
 4. 반복 throughput의 min/max가 0.85 이상인 후보 중 **최저 반복 throughput**이 가장 높은
    조합을 고릅니다. 최고 순간 GPU 속도는 선택 기준이 아닙니다.
-5. 선택한 조합으로 10,000장을 다시 처리합니다. 평균 img/s, elapsed, ImageNet 전체 예상
-   시간, 14.83 img/s 기준 PASS/FAIL을 출력합니다. 속도 FAIL은 실행 실패가 아닙니다.
+5. 선택한 조합으로 10,000장을 다시 처리합니다. 평균 img/s, elapsed, 현재 subset 전체
+   예상 시간과 ImageNet-1K 전체 외삽 시간, 각 24시간 PASS/FAIL을 출력합니다.
+   속도 FAIL은 실행 실패가 아닙니다.
    이미지 처리 오류가 있으면 best config를 활성화하지 않습니다.
 
 CPU만 있는 환경에서도 correctness 검증은 가능합니다. 축소된 테스트 config를 쓸 수 있지만
-**10k confirmation과 2회 반복을 완료한 설정만** full generation의 기본 설정이 됩니다.
+**10k confirmation과 2회 반복을 완료한 설정만** 현재 dataset 전체 generation의 기본 설정이 됩니다.
 GPU가 없는 결과는 리포트에 CPU 테스트로 표시됩니다. 실제 A5000 성능은 서버 결과로 판단합니다.
 
 timed wall은 image decode 시작부터 DINO, queue/IPC, MaskCut, bbox, label/receipt atomic
@@ -168,8 +180,8 @@ git commit -m "exp: A5000 ImageNet pseudo benchmark"
 git push
 ```
 
-후속 분석 시 `summary.md`와 `benchmark.json`을 먼저 확인합니다. ImageNet 이미지 수는
-config의 1,281,167 기준으로 예상 시간을 계산하고 실제 발견한 이미지 수도 기록합니다.
+후속 분석 시 `summary.md`와 `benchmark.json`을 먼저 확인합니다. 현재 subset의 실제
+이미지 수·예상 시간과 ImageNet 전체 1,281,167장에 대한 외삽 시간을 모두 기록합니다.
 
 ## 프로젝트 격리
 

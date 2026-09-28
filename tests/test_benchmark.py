@@ -51,6 +51,10 @@ def test_target_fail_is_an_estimate_not_an_exception():
     passed = estimate({"throughput_images_per_sec": 20}, c)
     assert passed["24h_target"] == "PASS"
     assert passed["estimated_imagenet_hours"] < 24
+    subset = estimate({"throughput_images_per_sec": 20}, c, 100_000)
+    assert subset["dataset_images"] == 100_000
+    assert subset["estimated_dataset_hours"] < subset["estimated_imagenet_hours"]
+    assert subset["dataset_24h_target"] == "PASS"
 
 
 def test_quality_median_zero_boxes_and_pixel_aspect():

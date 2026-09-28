@@ -69,10 +69,20 @@ def new_report(kind: str, config: Config, system: dict, dataset: Path) -> tuple[
     return directory, payload
 
 
-def estimate(result: dict, config: Config) -> dict:
+def estimate(result: dict, config: Config, dataset_images: int | None = None) -> dict:
     rate = result.get("throughput_images_per_sec", 0)
     return {
         "average_throughput_images_per_sec": rate,
+        "dataset_images": dataset_images,
+        "estimated_dataset_hours": dataset_images / rate / 3600
+        if rate and dataset_images is not None
+        else None,
+        "dataset_24h_target": (
+            "PASS" if rate >= dataset_images / 86400 else "FAIL"
+        ) if dataset_images is not None else "NOT MEASURED",
+        "dataset_target_images_per_sec": dataset_images / 86400
+        if dataset_images is not None
+        else None,
         "imagenet_images": config.benchmark.imagenet_images,
         "estimated_imagenet_hours": config.benchmark.imagenet_images / rate / 3600
         if rate
@@ -192,6 +202,7 @@ def save_report(directory: Path, payload: dict) -> None:
     system = payload["system"]
     outcome = payload.get("estimate", {})
     hours = outcome.get("estimated_imagenet_hours")
+    dataset_hours = outcome.get("estimated_dataset_hours")
     hardware = ", ".join(gpu["name"] for gpu in system.get("gpus", [])) or "CPU only"
     sustained = outcome.get("average_throughput_images_per_sec", 0)
     major = payload.get("bottleneck", {}).get("major_bottleneck", "not measured")
@@ -213,6 +224,7 @@ def save_report(directory: Path, payload: dict) -> None:
         f"DINO: {payload['configuration']['dino']}",
         f"MaskCut: {payload['configuration']['maskcut']}",
         f"Box filters: {payload['configuration']['filtering']}",
+        f"Dataset source: {payload.get('dataset_source', 'external or not recorded')}",
         "",
         f"Tested worker counts: {sorted({r['cpu_workers'] for r in payload['runs']})}",
         f"Tested batch sizes: {sorted({r['batch_size'] for r in payload['runs']})}",
@@ -222,8 +234,11 @@ def save_report(directory: Path, payload: dict) -> None:
         "",
         f"Best stable scaling throughput: {payload.get('best_stable_throughput', 'n/a')} img/s",
         f"Average sustained throughput: {sustained:.2f} img/s",
+        f"Estimated current dataset ({outcome.get('dataset_images', 'n/a')} images): "
+        f"{f'{dataset_hours:.2f} hours' if dataset_hours is not None else 'n/a'}",
+        f"Current dataset 24h target: **{outcome.get('dataset_24h_target', 'NOT MEASURED')}**",
         f"Estimated ImageNet total: {f'{hours:.2f} hours' if hours is not None else 'n/a'}",
-        f"24h target: **{outcome.get('24h_target', 'NOT MEASURED')}**",
+        f"Full ImageNet 24h target: **{outcome.get('24h_target', 'NOT MEASURED')}**",
         "",
         f"Major bottleneck: {major}",
         "",
