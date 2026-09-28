@@ -27,6 +27,26 @@ def scan_images(root: Path) -> list[ImageRecord]:
         raise ValueError(f"Not an image directory: {root}")
     records = []
     label_keys = set()
+    selection = root / ".solo-selection.txt"
+    if selection.exists():
+        for relative in selection.read_text().splitlines():
+            path_part = Path(relative)
+            if (
+                path_part.is_absolute()
+                or ".." in path_part.parts
+                or path_part.suffix.lower() not in EXTENSIONS
+            ):
+                raise ValueError(f"Invalid SOLO image selection path: {relative}")
+            path = root / path_part
+            stat = path.stat()
+            record = ImageRecord(str(path), path_part.as_posix(), stat.st_size, stat.st_mtime_ns)
+            if record.key in label_keys:
+                raise ValueError(f"Duplicate YOLO label in image selection: {relative}")
+            label_keys.add(record.key)
+            records.append(record)
+        if not records:
+            raise ValueError(f"Empty SOLO image selection: {selection}")
+        return records
     for directory, dirs, files in os.walk(root, followlinks=False):
         dirs.sort()
         for name in sorted(files):

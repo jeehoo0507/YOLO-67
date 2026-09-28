@@ -8,6 +8,7 @@ from pathlib import Path
 from solo import download
 from solo.cli import main
 from solo.config import ROOT
+from solo.dataset import scan_images
 
 
 def _inner_archive() -> bytes:
@@ -97,6 +98,60 @@ def test_group_download_receipt_skips_completed_transfer(tmp_path, monkeypatch):
     assert download.COMPLETE_FILE.is_file()
 
 
+def test_sample_stops_after_requested_images_and_resumes(tmp_path, monkeypatch):
+    contents = _inner_archive()
+    group = _one_group(contents)
+    monkeypatch.setattr(download, "TRAIN_DIR", tmp_path / "train")
+    monkeypatch.setattr(download, "SELECTION_FILE", tmp_path / "train/.solo-selection.txt")
+    monkeypatch.setattr(download, "RECEIPT_DIR", tmp_path / "receipts")
+    monkeypatch.setattr(download, "PLAN_FILE", tmp_path / "plan.json")
+    monkeypatch.setattr(download, "COMPLETE_FILE", tmp_path / "complete.json")
+    monkeypatch.setattr(download, "LOCK_FILE", tmp_path / ".download.lock")
+    monkeypatch.setattr(download, "DOWNLOAD_DIR", tmp_path / "downloads")
+    monkeypatch.setattr(download, "_index_remote", lambda: [group])
+    calls = []
+
+    def remote_range(start, size):
+        calls.append((start, size))
+
+        class Stream(io.BytesIO):
+            def close(self):
+                calls.append(self.tell())
+                super().close()
+
+        return Stream(contents)
+
+    monkeypatch.setattr(download, "_remote_range", remote_range)
+    download.download_imagenet(images_per_group=2)
+    assert len(calls) == 2
+    assert calls[1] < len(contents)
+    assert len(scan_images(download.TRAIN_DIR)) == 2
+    assert download.COMPLETE_FILE.is_file()
+    download.download_imagenet(images_per_group=2)
+    assert len(calls) == 2
+
+
+def test_sample_selects_existing_images_without_redownloading(tmp_path, monkeypatch):
+    contents = _inner_archive()
+    group = _one_group(contents)
+    folder = tmp_path / "train/n00000001"
+    folder.mkdir(parents=True)
+    for number in range(3):
+        (folder / f"n00000001_{number}.JPEG").write_bytes(f"image-{number}".encode())
+    monkeypatch.setattr(download, "TRAIN_DIR", tmp_path / "train")
+    monkeypatch.setattr(download, "SELECTION_FILE", tmp_path / "train/.solo-selection.txt")
+    monkeypatch.setattr(download, "RECEIPT_DIR", tmp_path / "receipts")
+    monkeypatch.setattr(download, "PLAN_FILE", tmp_path / "plan.json")
+    monkeypatch.setattr(download, "COMPLETE_FILE", tmp_path / "complete.json")
+    monkeypatch.setattr(download, "LOCK_FILE", tmp_path / ".download.lock")
+    monkeypatch.setattr(download, "DOWNLOAD_DIR", tmp_path / "downloads")
+    monkeypatch.setattr(download, "_index_remote", lambda: [group])
+    monkeypatch.setattr(download, "_remote_range", lambda start, size: None)
+    download.download_imagenet(images_per_group=2)
+    assert len(scan_images(download.TRAIN_DIR)) == 2
+    assert len(list(folder.glob("*.JPEG"))) == 3  # Preserve already downloaded images.
+
+
 def test_transient_range_error_retries_group(tmp_path, monkeypatch):
     contents = _inner_archive()
     item = {**_one_group(contents), "take_bytes": len(contents)}
@@ -138,11 +193,12 @@ def test_existing_archive_is_read_only(tmp_path, monkeypatch):
     assert archive.read_bytes() == original
 
 
-def test_download_cli_defaults_to_auto(monkeypatch):
-    calls: list[tuple[Path | None, str]] = []
+def test_download_cli_defaults_to_100k_sample(monkeypatch):
+    calls: list[tuple[Path | None, str, int]] = []
     monkeypatch.setenv("SOLO_ROOT", str(ROOT))
     monkeypatch.setattr(
-        download, "download_imagenet", lambda archive, mode: calls.append((archive, mode))
+        download, "download_imagenet",
+        lambda archive, mode, images_per_group: calls.append((archive, mode, images_per_group))
     )
     assert main(["download"]) == 0
-    assert calls == [(None, "auto")]
+    assert calls == [(None, "sample", 100)]

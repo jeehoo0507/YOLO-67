@@ -7,19 +7,16 @@ ImageNet directory names are only file identifiers. No ImageNet labels or annota
 
 서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. 데이터 출처는
 **ImageNet-1K / ILSVRC2012 train**입니다. 전체 train TAR은 **147.9 GB**이며 이미지
-1,281,167장이 1,000개 그룹에 들어 있습니다. `./solo download`는
-[공식 ImageNet 서버](https://image-net.org/challenges/LSVRC/2012/2012-downloads)에서
-서로 다른 세 그룹을 먼저 받아 **실제 다운로드 + 압축 해제 속도**를 측정합니다.
-20% 여유를 포함한 전체 획득 예상이 24시간 이내이고 디스크가 충분하면 전체를 받습니다.
-그렇지 않으면 1,000개 그룹 모두에서 일부 이미지를 받아 **전송량 99GB 이하**인
-ImageNet-1K subset으로 전환합니다. 부분 TAR을 읽어 완전한 JPEG만 저장하므로 큰 원본
-TAR은 만들지 않습니다. subset은 모든 그룹을 포함하지만 이미지 전체는 포함하지 않습니다.
-전송량·최종 이미지 수·예상 시간·선택 이유는 `data/imagenet/download_plan.json`과
-완료 기록에 저장됩니다. 중단 후 같은 명령을 실행하면 완료한 그룹은 건너뜁니다.
-class label과 annotation은 학습에 사용하지 않습니다. Index는
+1,281,167장이 1,000개 그룹에 들어 있습니다. 첫 실험에서 128만 장을 처리하는 시간을
+줄이기 위해 **`./solo download`는 기본적으로 그룹당 100장, 총 100,000장만 준비합니다.**
+[공식 ImageNet 서버](https://image-net.org/challenges/LSVRC/2012/2012-downloads)의
+TAR에서 필요한 이미지만 읽고 연결을 닫아 147.9 GB 원본을 내려받지 않습니다. 실제 저장
+크기와 다운로드량은 서버 실행 결과에 기록됩니다. ImageNet 그룹명은 파일 식별자로만
+사용하고 class label과 annotation은 학습에 사용하지 않습니다. Index는
 [`assets/imagenet_train_index.json`](assets/imagenet_train_index.json)에 포함되어 있어
 서버에서 헤더 1,000개를 다시 조회하지 않습니다. [ImageNet 이용 조건](https://www.image-net.org/download.php)을
 확인하세요. 공식 서버가 부분 요청을 제공하지 않으면 전체 파일을 대신 받지 않고 중단합니다.
+중단 후 같은 명령을 다시 실행하면 이미 준비된 그룹은 재사용합니다.
 
 ```bash
 git clone https://github.com/jeehoo0507/YOLO-67.git
@@ -29,7 +26,7 @@ cd YOLO-67
 
 `./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
 worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까지 실행합니다.
-터미널 마지막에 report 경로와 평균 img/s, **현재 subset 처리 예상 시간**, ImageNet-1K
+터미널 마지막에 report 경로와 평균 img/s, **10만 장 처리 예상 시간**, ImageNet-1K
 전체 128만 장으로 확장했을 때의 예상 시간이 나옵니다. 24시간 PASS/FAIL은 현재 subset과
 원래의 전체 ImageNet 목표를 각각 표시합니다.
 `&&`는 benchmark가 성공적으로 끝났을 때만 전체 이미지 처리(`generate`)를 시작합니다.
@@ -67,13 +64,17 @@ git push
 `uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
 NVIDIA driver는 변경하지 않습니다. DINO checkpoint는 SHA256 검증 후 사용합니다.
 `./solo download`가 받은 이미지는 `data/imagenet/train/`에 준비하며, 저장소를 삭제하면
-다운로드 데이터도 함께 삭제됩니다. 기존 외부 ImageNet 데이터는 읽기 전용으로
+다운로드 데이터도 함께 삭제됩니다. 이미 그 폴더에 10만 장 이상이 있다면 재다운로드 없이
+그룹당 100장을 선택합니다. 나머지 기존 파일은 자동 삭제하지 않지만 benchmark와 generate는
+`data/imagenet/train/.solo-selection.txt`에 기록된 **선택 이미지 10만 장만 처리합니다.**
+기존 외부 ImageNet 데이터는 읽기 전용으로
 `./solo benchmark /실제/경로 && ./solo generate /실제/경로`처럼 쓸 수 있습니다.
 이 경우 외부 데이터는 복사·수정하지 않습니다. 이미 받은 공식
 `ILSVRC2012_img_train.tar`가 이미 **외부 경로**에 있다면
-`./solo download --archive /실제/파일`로 같은 자동 선택을 실행할 수 있습니다.
-원본 archive는 읽기만 합니다. 강제로 전체 또는 100GB subset을 택하려면
-`./solo download --mode full` 또는 `./solo download --mode 100gb`를 사용합니다.
+`./solo download --archive /실제/파일`로 같은 10만 장 sample을 준비할 수 있습니다.
+원본 archive는 읽기만 합니다. 장수를 바꾸려면 `./solo download --images-per-group 200`
+(총 20만 장), 전체를 원할 때만 `./solo download --mode full`을 사용합니다.
+기존 100GB 또는 다운로드 속도 기준 자동 모드는 `--mode 100gb`, `--mode auto`로 남겨 두었습니다.
 이전에 저장소 안에 정상적으로 받아 둔 전체 TAR이 있으면 재사용합니다. 완료되지 않은
 `.part` 파일은 건드리지 않으며 새 부분 요청 방식에서는 사용하지 않습니다.
 

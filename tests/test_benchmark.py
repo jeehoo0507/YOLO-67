@@ -45,6 +45,19 @@ def test_standard_yolo_stem_and_filename_collision(tmp_path):
         scan_images(tmp_path)
 
 
+def test_selection_manifest_limits_existing_dataset(tmp_path):
+    from PIL import Image
+
+    for number in range(3):
+        Image.new("RGB", (20, 20)).save(tmp_path / f"image-{number}.jpg")
+    selection = tmp_path / ".solo-selection.txt"
+    selection.write_text("image-0.jpg\nimage-2.jpg\n")
+    assert [record.relative for record in scan_images(tmp_path)] == ["image-0.jpg", "image-2.jpg"]
+    selection.write_text("../outside.jpg\n")
+    with pytest.raises(ValueError, match="Invalid SOLO image selection"):
+        scan_images(tmp_path)
+
+
 def test_target_fail_is_an_estimate_not_an_exception():
     c = Config()
     assert estimate({"throughput_images_per_sec": 10}, c)["24h_target"] == "FAIL"
