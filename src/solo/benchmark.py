@@ -41,6 +41,8 @@ def benchmark(dataset: Path, config: Config) -> Path:
         all_records = scan_images(dataset)
         payload["discovery_seconds"] = time.perf_counter() - scan_started
         payload["dataset_images"] = len(all_records)
+        if dataset == local_path("data/coco/images"):
+            payload["dataset_source"] = "COCO 2017 train/val images only; no original annotations"
         if dataset == local_path("data/imagenet/train"):
             download_receipt = local_path("data/imagenet/.download-complete.json")
             if download_receipt.is_file():

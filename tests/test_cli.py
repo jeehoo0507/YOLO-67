@@ -10,10 +10,12 @@ def test_dataset_path_defaults_to_repository_folder(monkeypatch):
     monkeypatch.setattr("solo.benchmark.benchmark", lambda path, config: captured.append(path))
     monkeypatch.setattr("solo.generation.generate", lambda path, config: captured.append(path))
     monkeypatch.setattr("solo.reporting.create_preview", lambda path, config: captured.append(path))
+    monkeypatch.setattr("solo.detector.train_detector", lambda path, config: captured.append(path))
     assert main(["benchmark"]) == 0
     assert main(["generate"]) == 0
     assert main(["preview"]) == 0
-    assert captured == [ROOT / "data/imagenet/train"] * 3
+    assert main(["train"]) == 0
+    assert captured == [ROOT / "data/coco/images"] * 4
 
 
 def test_explicit_external_path_still_works(monkeypatch):
@@ -23,3 +25,11 @@ def test_explicit_external_path_still_works(monkeypatch):
     path = Path("/example/existing/imagenet")
     assert main(["benchmark", str(path)]) == 0
     assert captured == [path]
+
+
+def test_coco_download_command(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.coco.download_coco", lambda: calls.append("images only"))
+    assert main(["download-coco"]) == 0
+    assert calls == ["images only"]

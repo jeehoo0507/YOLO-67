@@ -15,6 +15,7 @@ dependencies = [
   "psutil==7.0.0",
   "tqdm==4.67.1",
   "threadpoolctl==3.6.0",
+  "ultralytics-opencv-headless==8.3.242",
 ]
 
 [dependency-groups]

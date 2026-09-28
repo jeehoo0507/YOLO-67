@@ -19,7 +19,7 @@ max_aspect_ratio = 10.0
 duplicate_iou = 0.9
 
 [pipeline]
-output_dir = "pseudo/coco"
+output_dir = "pseudo/imagenet"
 decode_workers = 4 # threads, never CUDA processes
 queue_batches = 2 # bound CPU jobs to workers + batch * queue_batches
 progress_interval = 1.0
@@ -39,13 +39,3 @@ max_workers = 0 # 0 = automatic; constrained by affinity, CPU quota, RAM
 preview_images = 64
 imagenet_images = 1281167
 target_images_per_sec = 14.83
-
-[train]
-epochs = 100
-image_size = 640
-batch_size = 16
-workers = 8
-device = "auto"
-seed = 0
-patience = 30
-progress_interval = 10.0

@@ -1,95 +1,96 @@
 # SOLO
 
-Milestone 1: **unlabeled images → frozen DINO ViT-S/16 → CPU MaskCut → single-class YOLO boxes**.
-ImageNet directory names are only file identifiers. No ImageNet labels or annotations are loaded.
+**COCO 이미지 → frozen DINO ViT-S/16 → MaskCut 비지도 박스 → YOLO11n 사전학습**
 
-## 서버에서 처음 실행
+COCO의 기존 바운딩 박스와 클래스 주석은 다운로드하거나 사용하지 않습니다.
+DINO/MaskCut이 만든 모든 박스를 **`0 = object`**로 저장합니다. YOLO11n은
+**무작위 초기화부터** 이 박스로 물체의 위치를 학습합니다. DINO는 이미 사전학습된
+ViT-S/16을 frozen 상태로 사용합니다.
 
-서버에 `uv` 실행 파일과 NVIDIA driver가 있으면 저장소를 받습니다. 데이터 출처는
-**ImageNet-1K / ILSVRC2012 train**입니다. 전체 train TAR은 **147.9 GB**이며 이미지
-1,281,167장이 1,000개 그룹에 들어 있습니다. 첫 실험에서 128만 장을 처리하는 시간을
-줄이기 위해 **`./solo download`는 기본적으로 그룹당 100장, 총 100,000장만 준비합니다.**
-[공식 ImageNet 서버](https://image-net.org/challenges/LSVRC/2012/2012-downloads)의
-TAR에서 필요한 이미지만 읽고 연결을 닫아 147.9 GB 원본을 내려받지 않습니다. 실제 저장
-크기와 다운로드량은 서버 실행 결과에 기록됩니다. ImageNet 그룹명은 파일 식별자로만
-사용하고 class label과 annotation은 학습에 사용하지 않습니다. Index는
-[`assets/imagenet_train_index.json`](assets/imagenet_train_index.json)에 포함되어 있어
-서버에서 헤더 1,000개를 다시 조회하지 않습니다. [ImageNet 이용 조건](https://www.image-net.org/download.php)을
-확인하세요. 공식 서버가 부분 요청을 제공하지 않으면 전체 파일을 대신 받지 않고 중단합니다.
-중단 후 같은 명령을 다시 실행하면 이미 준비된 그룹은 재사용합니다.
+최종 목표는 `입력 이미지 → YOLO 객체 후보 + DINO dense 특징 → 예시 이미지와 few-shot 매칭`
+입니다. 추후 query 전체에서 DINO를 한 번만 실행하고 각 후보 영역의 특징을 pooling해
+support prototype과 비교합니다. 현재 구현 범위는 데이터 준비·박스 생성·YOLO 학습이며,
+few-shot `infer`는 다음 단계입니다.
+
+## 서버에서 실행
+
+서버에 기존 `uv` 실행 파일과 NVIDIA driver만 있으면 됩니다. 처음 받는 경우:
 
 ```bash
 git clone https://github.com/jeehoo0507/YOLO-67.git
 cd YOLO-67
-./solo download && ./solo benchmark && ./solo generate
+./solo download-coco && ./solo benchmark && ./solo generate && ./solo train
 ```
 
-`./solo benchmark`가 프로젝트 내부 `uv` 환경 준비 → checkpoint 검증 → 100장 smoke test →
-worker/batch autotune → 10,000장 sustained benchmark → `reports/` 생성까지 실행합니다.
-터미널 마지막에 report 경로와 평균 img/s, **10만 장 처리 예상 시간**, ImageNet-1K
-전체 128만 장으로 확장했을 때의 예상 시간이 나옵니다. 24시간 PASS/FAIL은 현재 subset과
-원래의 전체 ImageNet 목표를 각각 표시합니다.
-`&&`는 benchmark가 성공적으로 끝났을 때만 전체 이미지 처리(`generate`)를 시작합니다.
-**24시간 목표 FAIL은 속도 평가일 뿐 명령 실패가 아니므로, 이 경우에도 generate가 이어집니다.**
-
-이미 클론한 서버라면 다시 클론하지 말고 최신 코드를 받은 뒤 같은 한 줄을 실행합니다.
+이미 클론했다면 삭제하지 않고 최신 코드를 받아도 됩니다:
 
 ```bash
 cd YOLO-67
 git pull --ff-only
-./solo download && ./solo benchmark && ./solo generate
+./solo download-coco && ./solo benchmark && ./solo generate && ./solo train
 ```
 
-**라벨 생성이 끝난 뒤 바운딩 박스 예시 보기:**
+위 한 줄은 **COCO 이미지 다운로드 → 실제 서버 병렬 benchmark/autotune → 전체 DINO 박스
+생성 → YOLO 학습** 순서로 실행됩니다. 한 단계가 실패하면 다음 단계는 실행하지 않습니다.
+24시간 throughput 목표의 FAIL은 속도 평가이므로 명령 실패로 처리하지 않습니다.
+다시 클론하려고 기존 폴더를 지우면 그 안의 이미지·환경·가중치·미공유 결과도 함께 삭제됩니다.
+
+단계를 따로 실행할 수도 있습니다:
 
 ```bash
-./solo preview
-```
-
-결과 이미지는 `reports/pseudo_preview.jpg`에 저장됩니다. GitHub에서도 보려면 아래
-`git add reports` → `git commit` → `git push` 명령으로 결과를 올리세요.
-
-benchmark 리포트를 먼저 확인하고 전체 처리 여부를 결정하려면 `./solo benchmark`만 실행한 뒤
-아래 `./solo generate`를 따로 실행하세요. 실험 결과를 Git으로 전달할 때:
-
-```bash
-git add reports
-git commit -m "exp: ImageNet pseudo-label results"
-git push
-```
-
-따로 진행하거나, 전체 처리가 중단되었을 때는 아래 명령을 실행합니다. 중단되면
-같은 명령을 다시 실행해 완료된 이미지부터 이어갑니다.
-
-```bash
+./solo download-coco
+./solo benchmark
 ./solo generate
+./solo preview
+./solo train
 ```
 
-환경 확인만 하려면 `./solo doctor`를 실행할 수 있습니다.
+`preview`는 저장된 DINO 박스를 원본 이미지 위에 그린 `reports/pseudo_preview.jpg`를
+만듭니다. DINO나 YOLO를 다시 실행하지 않습니다. `generate`도 완료 시 대표 grid를 저장합니다.
 
-`./solo`는 환경 변수를 설정하고 `uv run --frozen`으로 필요한 환경을 자동 동기화합니다.
-`.venv` 활성화나 별도 Python 명령은 필요 없습니다. Linux x86_64를 GPU 실행 대상으로
-합니다. Python 3.11.13, PyTorch 2.7.1과 CUDA 12.6 user-space dependencies는
-`uv.lock`으로 고정되고 저장소 안에 설치됩니다. Host CUDA toolkit 설치는 필요 없습니다.
-NVIDIA driver는 변경하지 않습니다. DINO checkpoint는 SHA256 검증 후 사용합니다.
-`./solo download`가 받은 이미지는 `data/imagenet/train/`에 준비하며, 저장소를 삭제하면
-다운로드 데이터도 함께 삭제됩니다. 이미 그 폴더에 10만 장 이상이 있다면 재다운로드 없이
-그룹당 100장을 선택합니다. 나머지 기존 파일은 자동 삭제하지 않지만 benchmark와 generate는
-`data/imagenet/train/.solo-selection.txt`에 기록된 **선택 이미지 10만 장만 처리합니다.**
-기존 외부 ImageNet 데이터는 읽기 전용으로
-`./solo benchmark /실제/경로 && ./solo generate /실제/경로`처럼 쓸 수 있습니다.
-이 경우 외부 데이터는 복사·수정하지 않습니다. 이미 받은 공식
-`ILSVRC2012_img_train.tar`가 이미 **외부 경로**에 있다면
-`./solo download --archive /실제/파일`로 같은 10만 장 sample을 준비할 수 있습니다.
-원본 archive는 읽기만 합니다. 장수를 바꾸려면 `./solo download --images-per-group 200`
-(총 20만 장), 전체를 원할 때만 `./solo download --mode full`을 사용합니다.
-기존 100GB 또는 다운로드 속도 기준 자동 모드는 `--mode 100gb`, `--mode auto`로 남겨 두었습니다.
-이전에 저장소 안에 정상적으로 받아 둔 전체 TAR이 있으면 재사용합니다. 완료되지 않은
-`.part` 파일은 건드리지 않으며 새 부분 요청 방식에서는 사용하지 않습니다.
+## 데이터와 학습 설정
 
-기본 설정은 [configs/baseline.toml](configs/baseline.toml)에 있습니다. 변경한 별도 TOML은
-`./solo benchmark --config configs/custom.toml`로 사용합니다. `generate`에도 같은
-config를 지정합니다. 알 수 없는 설정 이름은 에러로 처리합니다.
+- COCO 2017 train **118,287장**, val **5,000장**: 총 **123,287장**.
+- [공식 COCO 이미지](https://cocodataset.org/#download)만 사용합니다. 공식 S3 bucket의
+  HTTPS 주소에서 받아 `data/coco/images/train2017`, `val2017`에 풉니다.
+- 다운로드 약 **20.15 GB**. 완료된 zip은 압축 해제 후 삭제합니다. 압축 해제 중에는
+  zip과 이미지가 함께 있으므로 환경·cache까지 고려해 **여유 공간 60 GB 이상**을 권장합니다.
+- 다운로드는 `.part`에서 이어받고, 추출은 CRC 검사와 이미지별 atomic rename을 사용합니다.
+- 기본 DINO 384px, MaskCut 최대 2개 객체, CRF OFF. 입력 이미지에 객체가 많아도
+  첫 baseline은 이미지당 최대 2개 pseudo box만 생성합니다.
+- YOLO11n: **무작위 가중치**, `nc=1`, 640px, batch 16, 최대 100 epochs.
+  patience 30으로 개선이 없으면 일찍 종료합니다. 설정은
+  [configs/baseline.toml](configs/baseline.toml)의 `[train]`에서 바꿉니다.
+- 첫 학습 baseline은 FP32입니다. Ultralytics의 AMP 사전 검사가 COCO 사전학습 가중치를
+  자동 다운로드하는 경로를 피하도록 AMP를 껐습니다.
+- 공식 train/val 이미지 분할을 유지하지만 **양쪽 모두 DINO가 만든 라벨**로 학습·검증합니다.
+  검증 점수는 pseudo box와의 일치도이며 COCO 정답 기준 mAP가 아닙니다.
+
+학습 전에 모든 pseudo-label receipt를 검사합니다. 학습용 이미지 링크와 라벨 링크는
+`work/coco_yolo_dataset/`에 만들며 원본 이미지를 복사하지 않습니다.
+터미널에 epoch, batch 진행률, elapsed, **예상 남은 시간(ETA)**을 10초마다 표시합니다.
+ETA는 현재까지 관측한 속도와 최대 epoch 수에 따른 추정치이며 초반에는 변동이 큽니다.
+
+```text
+outputs/coco-yolo11n/weights/best.pt    # 학습 결과
+outputs/coco-yolo11n/weights/last.pt    # 재시작용
+reports/coco-yolo11n-training/          # 작은 학습 요약과 metrics
+```
+
+학습 중단 후 `./solo train`을 다시 실행하면 `last.pt`의 완료 epoch부터 이어갑니다.
+첫 checkpoint가 저장되기 전에 중단되면 첫 epoch부터 다시 시작합니다. 완료된 학습은
+같은 명령으로 다시 학습하지 않습니다. Dataset이나 주요 학습 설정을 바꾸어 새 실험을
+시작하려면 기존 `outputs/coco-yolo11n/`, `work/coco-train-state.json`을 먼저 보관하고
+해당 경로를 비웁니다.
+
+`./solo`는 `uv run --frozen`으로 저장소 내부 환경을 자동 준비합니다. `.venv` 활성화나
+별도 Python 명령은 필요 없습니다. Python 3.11.13, PyTorch 2.7.1 및 dependency는
+`uv.lock`으로 고정합니다. Host CUDA toolkit 설치나 NVIDIA driver 변경은 없습니다.
+환경만 확인하려면 `./solo doctor`를 실행합니다.
+
+별도 config는 `--config configs/custom.toml`로 지정하고 benchmark/generate/train에
+동일하게 적용합니다. 외부 COCO 이미지는 각 명령의 경로 인자로 지정할 수 있으며,
+`train2017/`, `val2017/`를 포함하는 이미지 root를 전달합니다.
 
 ## Benchmark
 
@@ -126,15 +127,15 @@ thread 수를 1로 고정합니다. 무한 queue나 이미지별 GPU worker를 �
 ## 출력과 resume
 
 ```text
-pseudo/imagenet/
+pseudo/coco/
 ├── labels/<relative-image-stem>.txt
 ├── receipts/<relative-image-path>.json
 └── .generation.lock
 ```
 
-예: `n01440764/abc.JPEG` → `labels/n01440764/abc.txt`. 같은 폴더에서 동일 stem의 JPG/PNG가
-겹치면 discovery에서 충돌을 명시하고 중단하므로 라벨을 덮어쓰지 않습니다. Milestone 2에서
-원본 이미지를 복사하지 않는 YOLO dataset adapter를 연결할 예정입니다.
+예: `train2017/000000000009.jpg` → `labels/train2017/000000000009.txt`. 같은 폴더에서 동일 stem의 JPG/PNG가
+겹치면 discovery에서 충돌을 명시하고 중단하므로 라벨을 덮어쓰지 않습니다. `./solo train`은
+원본 이미지를 복사하지 않는 YOLO dataset adapter를 사용합니다.
 
 ```text
 0 0.43120000 0.52210000 0.31500000 0.40120000
@@ -199,7 +200,7 @@ preview는 기본 64장으로 하나의 JPEG에 합칩니다. 대용량 라벨�
 
 ```bash
 git add reports
-git commit -m "exp: A5000 ImageNet pseudo benchmark"
+git commit -m "exp: COCO DINO boxes and YOLO training"
 git push
 ```
 
@@ -215,8 +216,8 @@ Python bytecode cache, NVIDIA CUDA JIT cache, PyTorch/Triton compile cache도 re
 활성화된 외부 Python/conda 환경 변수는 wrapper 안에서 해제합니다.
 `OMP/MKL/OPENBLAS_NUM_THREADS=1`이 기본입니다.
 global package 설치, global model cache, conda, sudo는 사용하지 않습니다. benchmark와
-generate에 전달한 외부 ImageNet 경로는 읽기만 합니다. 기존 uv executable은 관리하지
-않습니다. ImageNet 다운로드는 Python
+generate/train에 전달한 외부 이미지 경로는 읽기만 합니다. 기존 uv executable은 관리하지
+않습니다. 이미지 다운로드는 Python
 표준 라이브러리만 사용하며 별도 downloader 설치나 전역 인증 설정이 필요하지 않습니다.
 
 ## 검증 및 다음 milestone
@@ -228,16 +229,30 @@ generate에 전달한 외부 ImageNet 경로는 읽기만 합니다. 기존 uv e
 
 테스트는 spectral discovery, key-feature equivalence, normalized bbox, filter, single-class row,
 atomic write interruption, 손상/빈 receipt, parallel batching, resume, OOM, worker scaling과
-안정성 선택을 확인합니다. 실제 checkpoint 테스트는 이미 다운로드된 weight가 있을 때 실행하며
+안정성 선택, COCO 다운로드/추출 재시작과 학습 데이터 연결을 확인합니다. 실제 checkpoint 테스트는 이미 다운로드된 weight가 있을 때 실행하며
 테스트만으로 weight를 다운로드하지 않습니다.
 
 root `./solo` 파일과 Python package 디렉터리 이름 충돌을 피하기 위해 module은 `src/solo/`에
 둡니다. DINO는 `DenseBackbone` 계약, CPU discovery는 `discover_masks`, 저장은 `LabelStore`로
 분리되어 있습니다.
 
-`./solo train`과 `./solo infer --support ... --query ...`는 다음 milestone을 위한 예약 명령입니다.
-Milestone 1의 실제 서버 benchmark와 품질이 확인된 뒤 YOLO11n (640, single-class object)를
-학습하고, query당 한 번의 dense DINO forward + ROI pooling + prototype cosine matching을
-추가합니다. 현재 명령은 미구현임을 명시하고 종료하며 가짜 학습/추론 결과를 만들지 않습니다.
+`./solo train`은 무작위 초기화 YOLO11n (640, single-class object) 사전학습을 실행합니다.
+`./solo infer --support ... --query ...`는 다음 milestone을 위한 예약 명령입니다.
+이후 query당 한 번의 dense DINO forward + ROI pooling + prototype cosine matching을
+추가합니다. 현재 `infer`는 미구현임을 명시하고 종료합니다.
 
 공식 소스와 라이선스는 [THIRD_PARTY.md](THIRD_PARTY.md)에 기록합니다.
+
+## 기존 ImageNet 실험
+
+기존 ImageNet downloader는 `./solo download`로 유지합니다. COCO workflow에서는
+`./solo download-coco`를 사용하세요. ImageNet용 설정과 경로는 명시적으로 지정합니다:
+
+```bash
+./solo download
+./solo benchmark data/imagenet/train --config configs/imagenet.toml
+./solo generate data/imagenet/train --config configs/imagenet.toml
+```
+
+ImageNet class label은 사용하지 않습니다. 이미 생성한 ImageNet 데이터와 결과는 COCO
+명령이 자동 삭제하지 않습니다. `./solo train`은 현재 COCO train/val 구조를 대상으로 합니다.

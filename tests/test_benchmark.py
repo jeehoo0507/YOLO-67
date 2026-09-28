@@ -93,7 +93,7 @@ def test_preview_prioritizes_boxes_and_can_be_regenerated(tmp_path, monkeypatch)
     records = {record.relative: record for record in scan_images(source)}
     config = Config()
     store = LabelStore(
-        tmp_path / "pseudo/imagenet", config.fingerprint(CHECKPOINT_SHA256), str(source)
+        tmp_path / "pseudo/coco", config.fingerprint(CHECKPOINT_SHA256), str(source)
     )
     store.save(records["empty.jpg"], [], (64, 64))
     store.save(records["boxed.jpg"], [(0.5, 0.5, 0.5, 0.5)], (64, 64))

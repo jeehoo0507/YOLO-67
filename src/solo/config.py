@@ -38,7 +38,7 @@ class FilterConfig:
 
 @dataclass(frozen=True)
 class PipelineConfig:
-    output_dir: str = "pseudo/imagenet"
+    output_dir: str = "pseudo/coco"
     decode_workers: int = 4
     queue_batches: int = 2
     progress_interval: float = 1.0
@@ -63,12 +63,25 @@ class BenchmarkConfig:
 
 
 @dataclass(frozen=True)
+class TrainConfig:
+    epochs: int = 100
+    image_size: int = 640
+    batch_size: int = 16
+    workers: int = 8
+    device: str = "auto"
+    seed: int = 0
+    patience: int = 30
+    progress_interval: float = 10.0
+
+
+@dataclass(frozen=True)
 class Config:
     dino: DinoConfig = field(default_factory=DinoConfig)
     maskcut: MaskCutConfig = field(default_factory=MaskCutConfig)
     filtering: FilterConfig = field(default_factory=FilterConfig)
     pipeline: PipelineConfig = field(default_factory=PipelineConfig)
     benchmark: BenchmarkConfig = field(default_factory=BenchmarkConfig)
+    train: TrainConfig = field(default_factory=TrainConfig)
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -96,6 +109,7 @@ def load_config(path: Path | None = None) -> Config:
         "filtering": FilterConfig,
         "pipeline": PipelineConfig,
         "benchmark": BenchmarkConfig,
+        "train": TrainConfig,
     }
     unknown = raw.keys() - sections.keys()
     if unknown:
@@ -146,6 +160,13 @@ def validate(c: Config) -> None:
     if b.imagenet_images < 1 or b.target_images_per_sec <= 0:
         raise ValueError("Invalid full-dataset estimate settings")
     local_path(c.pipeline.output_dir)
+    t = c.train
+    if t.epochs < 1 or t.image_size < 32 or t.image_size % 32:
+        raise ValueError("Training epochs must be positive; image_size must be a multiple of 32")
+    if t.batch_size < 1 or t.workers < 0 or t.patience < 0 or t.progress_interval <= 0:
+        raise ValueError("Invalid training batch/workers/patience/progress interval")
+    if t.device not in {"auto", "cpu", "cuda"}:
+        raise ValueError("Training device must be auto, cpu, or cuda")
 
 
 def local_path(value: str | Path) -> Path:

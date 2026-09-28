@@ -38,3 +38,20 @@
 Local development previews may use upstream `maskcut/imgs/demo*.jpg` examples. These inputs are
 stored only in ignored `data/`; representative annotated JPEG grids may be included in local
 correctness reports with their source recorded. No ImageNet data is bundled.
+
+## YOLO11n / Ultralytics
+
+- Source: [Ultralytics](https://github.com/ultralytics/ultralytics), using its
+  [`ultralytics-opencv-headless`](https://pypi.org/project/ultralytics-opencv-headless/8.3.242/)
+  distribution pinned to `8.3.242` in `uv.lock`.
+- [License](https://github.com/ultralytics/ultralytics/blob/main/LICENSE): AGPL-3.0, with a separate
+  commercial license offered by Ultralytics.
+- `./solo train` constructs the packaged `yolo11n.yaml` architecture with random weights.
+  It trains only on SOLO's DINO/MaskCut single-class pseudo boxes. COCO's original detection
+  annotations and COCO-pretrained YOLO weights are not used.
+
+## COCO images
+
+- [COCO 2017](https://cocodataset.org/#download) train2017 and val2017 images only.
+- Downloaded from the official `images.cocodataset.org` S3 bucket using HTTPS path-style URLs.
+- Images and archives are ignored by Git. No COCO annotation archive is downloaded.

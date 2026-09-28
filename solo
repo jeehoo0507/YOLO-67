@@ -19,6 +19,8 @@ export HF_HOME="$SOLO_ROOT/.cache/huggingface"
 export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
 export ULTRALYTICS_CONFIG_DIR="$SOLO_ROOT/.config/ultralytics"
 export YOLO_CONFIG_DIR="$ULTRALYTICS_CONFIG_DIR"
+export YOLO_AUTOINSTALL=false
+export YOLO_OFFLINE=true
 export MPLCONFIGDIR="$SOLO_ROOT/.config/matplotlib"
 export PYTHONPYCACHEPREFIX="$SOLO_ROOT/.cache/pycache"
 export CUDA_CACHE_PATH="$SOLO_ROOT/.cache/nvidia/ComputeCache"
@@ -35,7 +37,7 @@ export VECLIB_MAXIMUM_THREADS="${VECLIB_MAXIMUM_THREADS:-1}"
 export PYTHONNOUSERSITE=1
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 unset VIRTUAL_ENV CONDA_PREFIX PYTHONHOME PYTHONPATH UV_PROJECT UV_PYTHON
-mkdir -p "$TMPDIR" "$CUDA_CACHE_PATH"
+mkdir -p "$TMPDIR" "$CUDA_CACHE_PATH" "$ULTRALYTICS_CONFIG_DIR/Ultralytics"
 if ! command -v uv >/dev/null 2>&1; then
   echo "SOLO requires a pre-existing uv executable." >&2
   exit 1
