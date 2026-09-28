@@ -12,8 +12,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageOps
 
-from .config import ROOT, Config, local_path
-from .dataset import ImageRecord
+from .config import ROOT, Config, local_path, protect_dataset
+from .dataset import ImageRecord, deterministic_subset, scan_images
 from .progress import duration
 from .pseudo_labels import LabelStore
 from .storage import atomic_write, write_json
@@ -114,11 +114,14 @@ def bottleneck(result: dict) -> dict:
 
 
 def preview(records: list[ImageRecord], store: LabelStore, path: Path, count: int) -> int:
-    samples = []
+    boxed = []
+    unboxed = []
     # The caller passes a deterministic subset; no large per-image previews are stored.
     for record in records:
         boxes = store.valid_boxes(record)
         if boxes is None:
+            continue
+        if not boxes and len(unboxed) >= count:
             continue
         try:
             with Image.open(record.path) as source:
@@ -139,13 +142,17 @@ def preview(records: list[ImageRecord], store: LabelStore, path: Path, count: in
             tile = Image.new("RGB", (192, 216), (24, 24, 24))
             tile.paste(ImageOps.pad(image, (192, 192), color=(24, 24, 24)), (0, 0))
             ImageDraw.Draw(tile).text(
-                (4, 198), f"#{len(samples) + 1}  object boxes: {len(boxes)}", fill="white"
+                (4, 198), f"object boxes: {len(boxes)}", fill="white"
             )
-            samples.append(tile)
-            if len(samples) >= count:
+            if boxes:
+                boxed.append(tile)
+            elif len(unboxed) < count:
+                unboxed.append(tile)
+            if len(boxed) >= count:
                 break
         except OSError:
             continue
+    samples = (boxed + unboxed)[:count]
     if not samples:
         raise ValueError("No valid pseudo-labels available for visualization")
     cols = min(8, len(samples))
@@ -157,6 +164,29 @@ def preview(records: list[ImageRecord], store: LabelStore, path: Path, count: in
     grid.save(buffer, format="JPEG", quality=75, optimize=True)
     atomic_write(path, buffer.getvalue())
     return len(samples)
+
+
+def create_preview(dataset: Path, config: Config) -> Path:
+    from .dino import CHECKPOINT_SHA256
+
+    dataset = dataset.resolve(strict=True)
+    labels = local_path(config.pipeline.output_dir)
+    path = local_path("reports/pseudo_preview.jpg")
+    protect_dataset(dataset, labels)
+    protect_dataset(dataset, path.parent)
+    if not labels.is_dir():
+        raise RuntimeError("No pseudo labels yet. Run ./solo generate first.")
+    records = scan_images(dataset)
+    records = deterministic_subset(records, len(records), config.pipeline.seed)
+    store = LabelStore(labels, config.fingerprint(CHECKPOINT_SHA256), str(dataset))
+    try:
+        count = preview(records, store, path, config.benchmark.preview_images)
+    except ValueError as exc:
+        raise RuntimeError(
+            "No matching pseudo labels found. Run ./solo generate with this dataset and config."
+        ) from exc
+    print(f"Bounding-box preview ({count} images): {path}", flush=True)
+    return path
 
 
 def save_report(directory: Path, payload: dict) -> None:

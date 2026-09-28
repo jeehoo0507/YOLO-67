@@ -13,7 +13,7 @@ def main(argv: list[str] | None = None) -> int:
         prog="./solo", description="SOLO: frozen DINO + CPU MaskCut baseline"
     )
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("benchmark", "generate"):
+    for name in ("benchmark", "generate", "preview"):
         command = commands.add_parser(name)
         command.add_argument(
             "dataset",
@@ -65,10 +65,14 @@ def main(argv: list[str] | None = None) -> int:
                 from .benchmark import benchmark
 
                 benchmark(args.dataset, config)
-            else:
+            elif args.command == "generate":
                 from .generation import generate
 
                 generate(args.dataset, config)
+            else:
+                from .reporting import create_preview
+
+                create_preview(args.dataset, config)
     except KeyboardInterrupt:
         print("Interrupted; completed image receipts remain resumable.", file=sys.stderr)
         return 130

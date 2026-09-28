@@ -9,9 +9,11 @@ def test_dataset_path_defaults_to_repository_folder(monkeypatch):
     monkeypatch.setenv("SOLO_ROOT", str(ROOT))
     monkeypatch.setattr("solo.benchmark.benchmark", lambda path, config: captured.append(path))
     monkeypatch.setattr("solo.generation.generate", lambda path, config: captured.append(path))
+    monkeypatch.setattr("solo.reporting.create_preview", lambda path, config: captured.append(path))
     assert main(["benchmark"]) == 0
     assert main(["generate"]) == 0
-    assert captured == [ROOT / "data/imagenet/train"] * 2
+    assert main(["preview"]) == 0
+    assert captured == [ROOT / "data/imagenet/train"] * 3
 
 
 def test_explicit_external_path_still_works(monkeypatch):

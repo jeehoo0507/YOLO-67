@@ -172,6 +172,19 @@ throughput, DINO/MaskCut/IO/bbox timing, queue/backpressure, peak allocated VRAM
 workers와 producer wall의 비교로 **추정**하며 GPU utilization 측정치로 오해하지 않도록 표시합니다.
 preview는 기본 64장으로 하나의 JPEG에 합칩니다. 대용량 라벨과 원본 이미지는 report에 복사하지
 않습니다. 실패한 실행도 가능한 범위에서 partial report를 남깁니다.
+`./solo generate`가 끝나면 터미널에 `Bounding-box preview (64 images): .../pseudo_preview.jpg`
+경로를 표시합니다. 이 파일은 실제 의사 라벨 박스를 원본 이미지 위에 그린 64장짜리 grid이며,
+박스가 있는 예시를 우선 담습니다. `summary.md`에도 같은 이미지가 표시됩니다. 서버에서
+아래처럼 `reports/`만 GitHub에 올리면 웹에서 preview를 바로 볼 수 있습니다.
+
+생성이 끝난 뒤 예시만 다시 만들려면 다음 명령을 실행합니다. DINO와 MaskCut은 다시 돌리지
+않고 저장된 라벨을 읽어 `reports/pseudo_preview.jpg`를 만듭니다. 외부 이미지 디렉터리나
+별도 설정을 사용했다면 `./solo preview /실제/경로 --config configs/custom.toml`처럼
+`generate`와 동일하게 지정합니다.
+
+```bash
+./solo preview
+```
 
 서버에서는 source code를 편집할 필요 없이 다음과 같이 결과만 공유합니다.
 

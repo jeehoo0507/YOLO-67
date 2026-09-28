@@ -5,8 +5,9 @@ import pytest
 from solo.benchmark import choose_best
 from solo.config import ROOT, Config, local_path, protect_dataset
 from solo.dataset import ImageRecord, deterministic_subset, scan_images, subset_digest
+from solo.pseudo_labels import LabelStore
 from solo.quality import QualityStats
-from solo.reporting import estimate
+from solo.reporting import create_preview, estimate, preview
 from solo.system_info import worker_candidates
 
 
@@ -78,6 +79,32 @@ def test_quality_median_zero_boxes_and_pixel_aspect():
     assert report["median_boxes_per_image"] == 0.5
     assert report["zero_box_image_ratio"] == 0.5
     assert sum(report["bbox_aspect_ratio_distribution"]["counts"]) == 1
+
+
+def test_preview_prioritizes_boxes_and_can_be_regenerated(tmp_path, monkeypatch):
+    from PIL import Image
+
+    from solo.dino import CHECKPOINT_SHA256
+
+    source = tmp_path / "images"
+    source.mkdir()
+    for name in ("empty.jpg", "boxed.jpg"):
+        Image.new("RGB", (64, 64), "white").save(source / name)
+    records = {record.relative: record for record in scan_images(source)}
+    config = Config()
+    store = LabelStore(
+        tmp_path / "pseudo/imagenet", config.fingerprint(CHECKPOINT_SHA256), str(source)
+    )
+    store.save(records["empty.jpg"], [], (64, 64))
+    store.save(records["boxed.jpg"], [(0.5, 0.5, 0.5, 0.5)], (64, 64))
+    result = tmp_path / "preview.jpg"
+    assert preview([records["empty.jpg"], records["boxed.jpg"]], store, result, 1) == 1
+    with Image.open(result) as image:
+        assert any(r > 180 and g < 160 and b < 130 for r, g, b in image.getdata())
+    monkeypatch.setattr("solo.reporting.local_path", lambda value: tmp_path / value)
+    regenerated = create_preview(source, config)
+    assert regenerated == tmp_path / "reports/pseudo_preview.jpg"
+    assert regenerated.is_file()
 
 
 def test_output_is_local_and_cannot_overlap_input():

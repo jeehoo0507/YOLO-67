@@ -64,7 +64,7 @@ def generate(dataset: Path, config: Config) -> Path:
             payload["discovery_seconds"] = time.perf_counter() - started
             payload["dataset_images"] = len(records)
             samples = deterministic_subset(
-                records, config.benchmark.preview_images, config.pipeline.seed
+                records, config.benchmark.preview_images * 8, config.pipeline.seed
             )
             store = LabelStore(output, fingerprint, str(dataset), config.pipeline.fsync)
             backbone = DinoBackbone(config.dino)
@@ -111,4 +111,10 @@ def generate(dataset: Path, config: Config) -> Path:
                 payload["warnings"].append(f"Preview: {exc}")
         save_report(directory, payload)
         print(f"Report: {directory}", flush=True)
+        preview_path = directory / "pseudo_preview.jpg"
+        if preview_path.is_file():
+            print(
+                f"Bounding-box preview ({payload['preview_samples']} images): {preview_path}",
+                flush=True,
+            )
     return directory
