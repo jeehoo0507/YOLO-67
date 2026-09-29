@@ -33,3 +33,16 @@ def test_coco_download_command(monkeypatch):
     monkeypatch.setattr("solo.coco.download_coco", lambda: calls.append("images only"))
     assert main(["download-coco"]) == 0
     assert calls == ["images only"]
+
+
+def test_predict_defaults_and_custom_image(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.prediction.predict_objects", lambda *args: calls.append(args))
+    assert main(["predict"]) == 0
+    assert calls[0][0] == ROOT / "data/coco/images/val2017"
+    assert calls[0][1] == ROOT / "outputs/coco-yolo11n/weights/best.pt"
+    assert calls[0][3:] == (16, 0.25)
+    assert main(["predict", "/example/photo.jpg", "--conf", "0.1"]) == 0
+    assert calls[1][0] == Path("/example/photo.jpg")
+    assert calls[1][4] == 0.1

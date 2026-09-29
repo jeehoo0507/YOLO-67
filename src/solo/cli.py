@@ -50,6 +50,21 @@ def main(argv: list[str] | None = None) -> int:
         help="Image directory used for ./solo generate",
     )
     train.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+    predict = commands.add_parser("predict", help="Test trained YOLO and save object box images")
+    predict.add_argument(
+        "source", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
+        help="Image or directory (default: COCO val2017)",
+    )
+    predict.add_argument(
+        "--weights", type=Path, default=ROOT / "outputs/coco-yolo11n/weights/best.pt",
+    )
+    predict.add_argument(
+        "--limit", type=int, default=16, help="Image limit; 0 means all (default: 16)",
+    )
+    predict.add_argument(
+        "--conf", type=float, default=0.25, help="Confidence threshold (default: 0.25)",
+    )
+    predict.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
     infer = commands.add_parser("infer", help="Reserved for Milestone 3: few-shot ROI matching")
     infer.add_argument("--support", type=Path)
     infer.add_argument("--query", type=Path)
@@ -90,6 +105,10 @@ def main(argv: list[str] | None = None) -> int:
                 from .detector import train_detector
 
                 train_detector(args.dataset, config)
+            elif args.command == "predict":
+                from .prediction import predict_objects
+
+                predict_objects(args.source, args.weights, config, args.limit, args.conf)
             else:
                 from .reporting import create_preview
 

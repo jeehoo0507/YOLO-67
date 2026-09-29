@@ -48,6 +48,41 @@ git pull --ff-only
 `preview`는 저장된 DINO 박스를 원본 이미지 위에 그린 `reports/pseudo_preview.jpg`를
 만듭니다. DINO나 YOLO를 다시 실행하지 않습니다. `generate`도 완료 시 대표 grid를 저장합니다.
 
+## 학습한 YOLO 테스트
+
+학습이 끝나면 아래 명령으로 COCO 검증 이미지의 첫 16장에 **학습한 YOLO가 예측한 박스**를
+그립니다. `outputs/coco-yolo11n/weights/best.pt`를 자동으로 사용합니다.
+
+```bash
+./solo predict
+```
+
+내 사진 한 장 또는 사진 폴더도 지정할 수 있습니다. 원본은 수정하지 않습니다.
+
+```bash
+./solo predict /path/to/photo.jpg
+./solo predict /path/to/photos
+./solo predict /path/to/photos --limit 0
+```
+
+폴더는 하위 폴더를 포함해 경로순으로 기본 16장만 처리합니다. `--limit 0`은 전부,
+`--limit 100`은 최대 100장을 처리합니다. 박스가 너무 적으면 `--conf 0.1`로 confidence
+threshold를 낮춰 확인할 수 있습니다(기본 0.25). 별도 학습 설정을 사용했다면
+`--config configs/custom.toml`을 같이 전달합니다.
+
+결과는 실행할 때마다 새 폴더에 저장하고 터미널에 그 위치와 진행률·ETA를 출력합니다:
+
+```text
+outputs/predictions/<run-id>/images/       # 박스와 object confidence를 그린 이미지
+outputs/predictions/<run-id>/boxes/        # 이미지별 박스 좌표·confidence JSON
+outputs/predictions/<run-id>/summary.json  # 사용한 가중치·설정·처리 수
+```
+
+`images/`의 JPG를 열면 됩니다. 객체를 찾지 못한 이미지도 박스 없이 저장합니다.
+이 명령은 YOLO의 `object` 탐지 결과를 눈으로 확인하는 용도이며 COCO 정답 기준 mAP 평가나
+few-shot 분류는 수행하지 않습니다. DINO 학습 라벨 확인은 `./solo preview`, 학습된 YOLO
+결과 확인은 `./solo predict`입니다. `./solo test`는 개발용 코드 테스트 명령입니다.
+
 ## 데이터와 학습 설정
 
 - COCO 2017 train **118,287장**, val **5,000장**: 총 **123,287장**.
