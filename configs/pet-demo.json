@@ -1,0 +1,129 @@
+{
+  "dataset": "timm/oxford-iiit-pet",
+  "revision": "089695c834a7deb60505b7cc506672db1c31a6aa",
+  "source": "https://www.robots.ox.ac.uk/~vgg/data/pets/",
+  "license": "CC-BY-SA-4.0",
+  "selection": "First train row per selected breed for support; first three test rows per breed for query, before inference. No outcome-based exclusions.",
+  "images": [
+    {
+      "id": "beagle_178",
+      "class": "beagle",
+      "label": 4,
+      "split": "train",
+      "row_index": 51,
+      "role": "support",
+      "file": "data/pet-study/beagle_178.jpg",
+      "sha256": "f872d47c3cffdcc03736856910500b8a4b4030096985cd3e59faafd5da310e98"
+    },
+    {
+      "id": "pug_123",
+      "class": "pug",
+      "label": 25,
+      "split": "train",
+      "row_index": 9,
+      "role": "support",
+      "file": "data/pet-study/pug_123.jpg",
+      "sha256": "fe935bcbc449cd2ce362b504c77bb0ed07093c37bfe9517cb6c44a75798e7310"
+    },
+    {
+      "id": "samoyed_127",
+      "class": "samoyed",
+      "label": 29,
+      "split": "train",
+      "row_index": 111,
+      "role": "support",
+      "file": "data/pet-study/samoyed_127.jpg",
+      "sha256": "1566d2f262450e0e8597dcda74b9618de275bbd5bd8a4030c5b7b0f5b93e5378"
+    },
+    {
+      "id": "beagle_44",
+      "class": "beagle",
+      "label": 4,
+      "split": "test",
+      "row_index": 115,
+      "role": "query",
+      "file": "data/pet-study/beagle_44.jpg",
+      "sha256": "4dc4e1f03952f1074f117a5598aca88695247c0ec43ab28d2ec28a4715ba8c87"
+    },
+    {
+      "id": "beagle_30",
+      "class": "beagle",
+      "label": 4,
+      "split": "test",
+      "row_index": 174,
+      "role": "query",
+      "file": "data/pet-study/beagle_30.jpg",
+      "sha256": "80e75acbfaecb5261f17dc2fa9a870bc70053092a8d6e85606018d7549e67ea3"
+    },
+    {
+      "id": "beagle_6",
+      "class": "beagle",
+      "label": 4,
+      "split": "test",
+      "row_index": 206,
+      "role": "query",
+      "file": "data/pet-study/beagle_6.jpg",
+      "sha256": "004c9f7cd2c15a9f0f4faa1582252da4ab703a144b7a2549704ee95b0090805d"
+    },
+    {
+      "id": "pug_57",
+      "class": "pug",
+      "label": 25,
+      "split": "test",
+      "row_index": 1,
+      "role": "query",
+      "file": "data/pet-study/pug_57.jpg",
+      "sha256": "c3ffdc25566ae138be7d76121c7225fba6879568739338b240b60d97181d2609"
+    },
+    {
+      "id": "pug_62",
+      "class": "pug",
+      "label": 25,
+      "split": "test",
+      "row_index": 170,
+      "role": "query",
+      "file": "data/pet-study/pug_62.jpg",
+      "sha256": "ecf42e6b754a08133f0649e6e70c31469ce11be866446fb7166b3a28dc41e06e"
+    },
+    {
+      "id": "pug_55",
+      "class": "pug",
+      "label": 25,
+      "split": "test",
+      "row_index": 200,
+      "role": "query",
+      "file": "data/pet-study/pug_55.jpg",
+      "sha256": "3a8c7a4b3f073eba4724fd84d9f3bd360b4ef33c65e6cfdb14abf151308157bc"
+    },
+    {
+      "id": "samoyed_80",
+      "class": "samoyed",
+      "label": 29,
+      "split": "test",
+      "row_index": 67,
+      "role": "query",
+      "file": "data/pet-study/samoyed_80.jpg",
+      "sha256": "7e72155c00bd1008c2b6b142f670753b0f3ddf50aabdabe42cd0d8328f432606"
+    },
+    {
+      "id": "samoyed_86",
+      "class": "samoyed",
+      "label": 29,
+      "split": "test",
+      "row_index": 153,
+      "role": "query",
+      "file": "data/pet-study/samoyed_86.jpg",
+      "sha256": "bb8dc9086cb84edda951c07a56aba345008c25046f9ebb3b1758b2a7faf7769e"
+    },
+    {
+      "id": "samoyed_196",
+      "class": "samoyed",
+      "label": 29,
+      "split": "test",
+      "row_index": 163,
+      "role": "query",
+      "file": "data/pet-study/samoyed_196.jpg",
+      "sha256": "45eb6d4f479d9a1284f2f79f9cc80d513d368bdd8fd6330c4c63b6b6851dba3a"
+    }
+  ]
+}

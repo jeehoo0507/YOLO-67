@@ -104,3 +104,18 @@ correctness reports with their source recorded. No ImageNet data is bundled.
   `v8.3.0/yolo11n.pt`, SHA256
   `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`.
   This is explicitly a supervised control; SOLO training still initializes from YAML.
+# Oxford-IIIT Pet few-shot demo
+
+The pet demo uses twelve images from the Oxford-IIIT Pet Dataset, by Omkar M.
+Parkhi, Andrea Vedaldi, Andrew Zisserman and C. V. Jawahar, *Cats and Dogs*, CVPR
+2012. Official dataset: https://www.robots.ox.ac.uk/~vgg/data/pets/ . The dataset
+is made available under CC BY-SA 4.0; copyright remains with the original image
+owners. Resized, annotated previews and collages derived from these images in
+pet-demo reports are also shared under CC BY-SA 4.0.
+
+Only selected images are fetched from the timm/oxford-iiit-pet mirror at revision
+089695c834a7deb60505b7cc506672db1c31a6aa through the Hugging Face dataset viewer.
+The manifest records original image IDs, train/test split, row indices and asset
+SHA256. A changed dataset revision or asset fails validation. These photos are
+breed examples, not verified identity-disjoint individuals, and backbone
+pretraining overlap has not been assessed.

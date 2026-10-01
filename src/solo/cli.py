@@ -22,6 +22,7 @@ def main(argv: list[str] | None = None) -> int:
         prog="./solo", description="SOLO: COCO images → DINO/MaskCut boxes → YOLO object detector"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("pet-demo", help="Compare YOLO + DINO on three everyday dog breeds")
     commands.add_parser("crop-demo", help="Run a fixed three-state PlantDoc few-shot comparison")
     sam = commands.add_parser("compare-sam", help="Compare DINO/MaskCut and automatic SAM 2.1")
     sam.add_argument("dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017")
@@ -113,7 +114,11 @@ def main(argv: list[str] | None = None) -> int:
     if os.environ.get("SOLO_ROOT") != str(ROOT):
         parser.error("Use the ./solo wrapper so all environments / caches stay project-local")
     try:
-        if args.command == "crop-demo":
+        if args.command == "pet-demo":
+            from .pet_demo import pet_demo
+
+            pet_demo()
+        elif args.command == "crop-demo":
             from .crop_demo import crop_demo
 
             crop_demo()

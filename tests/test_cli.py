@@ -100,3 +100,11 @@ def test_crop_demo_routes_without_production_training(monkeypatch):
     monkeypatch.setattr("solo.crop_demo.crop_demo", lambda: calls.append("demo"))
     assert main(["crop-demo"]) == 0
     assert calls == ["demo"]
+
+
+def test_pet_demo_routes_without_production_training(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.pet_demo.pet_demo", lambda: calls.append("pets"))
+    assert main(["pet-demo"]) == 0
+    assert calls == ["pets"]
