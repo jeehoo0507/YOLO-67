@@ -1,0 +1,585 @@
+{
+  "schema_version": 1,
+  "run_id": "20261001T120540Z-compare-dedede",
+  "kind": "compare",
+  "status": "complete",
+  "created_utc": "2026-10-01T12:05:40.534029+00:00",
+  "git": {
+    "commit_sha": "10e6481d77c30c76d8e3390db447038c43a6362d",
+    "branch": "codex/milestone-1",
+    "dirty": false
+  },
+  "command": "./solo compare data/crowded-check --limit 2",
+  "configuration": {
+    "dino": {
+      "model": "dino_vits16",
+      "resolution": 512,
+      "device": "auto",
+      "mixed_precision": true
+    },
+    "maskcut": {
+      "tau": 0.15,
+      "epsilon": 1e-05,
+      "max_objects": 12,
+      "min_mask_area": 0.003,
+      "max_mask_iou": 0.5,
+      "crf": false,
+      "all_components": true,
+      "split_depth": 0,
+      "split_min_patches": 8,
+      "split_temperature": 0.05,
+      "split_max_ncut": 0.15,
+      "split_min_cosine_distance": 0.1,
+      "max_instances": 24
+    },
+    "filtering": {
+      "min_box_area": 0.002,
+      "max_box_area": 0.95,
+      "max_aspect_ratio": 10.0,
+      "duplicate_iou": 0.9
+    },
+    "pipeline": {
+      "output_dir": "pseudo/coco-crowded",
+      "decode_workers": 4,
+      "queue_batches": 2,
+      "progress_interval": 1.0,
+      "rolling_seconds": 30.0,
+      "fsync": true,
+      "seed": 0
+    },
+    "benchmark": {
+      "smoke_images": 100,
+      "scaling_images": 1000,
+      "confirmation_images": 10000,
+      "repeats": 2,
+      "min_stability_ratio": 0.85,
+      "batch_sizes": [
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "worker_counts": [],
+      "max_workers": 0,
+      "preview_images": 64,
+      "imagenet_images": 1281167,
+      "target_images_per_sec": 14.83
+    },
+    "train": {
+      "run_name": "coco-yolo11n-crowded",
+      "epochs": 100,
+      "image_size": 640,
+      "batch_size": 16,
+      "workers": 8,
+      "device": "auto",
+      "seed": 0,
+      "patience": 30,
+      "progress_interval": 10.0
+    }
+  },
+  "system": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": 14,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 25575407616,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "dataset_root": "/Users/choejihu/Documents/ChatGPT/SOLO/data/crowded-check",
+  "runs": [
+    {
+      "images_total": 2,
+      "images_processed": 2,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 2,
+      "elapsed_seconds": 0.4251336670058663,
+      "throughput_images_per_sec": 4.7044027683942575,
+      "timing_seconds": {
+        "decode_seconds": 0.24491775000205962,
+        "dino_seconds": 0.25805454199871747,
+        "maskcut_seconds": 0.06125450100080343,
+        "bbox_seconds": 8.604100730735809e-05,
+        "write_seconds": 0.0030217079984140582,
+        "queue_seconds": 0.002139291995263193,
+        "backpressure_seconds": 2.125998435076326e-06,
+        "decode_wait_seconds": 0.09759387501253514
+      },
+      "timing_ms_per_image": {
+        "decode": 122.45887500102981,
+        "dino": 129.02727099935873,
+        "maskcut": 30.627250500401715,
+        "bbox": 0.04302050365367904,
+        "write": 1.5108539992070291,
+        "queue": 1.0696459976315964,
+        "backpressure": 0.001062999217538163,
+        "decode_wait": 48.79693750626757
+      },
+      "quality": {
+        "valid_images": 2,
+        "total_boxes": 3,
+        "mean_boxes_per_image": 1.5,
+        "median_boxes_per_image": 1.5,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "1": 1,
+          "2": 1
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            2,
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            0,
+            0,
+            1,
+            2,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 4,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.43201754199981224,
+      "recovery_seconds": 0.008155791998433415,
+      "backbone": {
+        "model": "dino_vits16",
+        "parameters": 21665664,
+        "patch_size": 16,
+        "feature_type": "last_attention_keys",
+        "frozen": true,
+        "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+        "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+        "device": "cpu",
+        "mixed_precision": false,
+        "resolution": 384,
+        "amp_float32_retry_batches": 0
+      },
+      "stage": "baseline",
+      "repeat": 0,
+      "configuration": {
+        "dino": {
+          "model": "dino_vits16",
+          "resolution": 384,
+          "device": "auto",
+          "mixed_precision": true
+        },
+        "maskcut": {
+          "tau": 0.15,
+          "epsilon": 1e-05,
+          "max_objects": 2,
+          "min_mask_area": 0.01,
+          "max_mask_iou": 0.5,
+          "crf": false,
+          "all_components": false,
+          "split_depth": 0,
+          "split_min_patches": 8,
+          "split_temperature": 0.05,
+          "split_max_ncut": 0.15,
+          "split_min_cosine_distance": 0.1,
+          "max_instances": 24
+        },
+        "filtering": {
+          "min_box_area": 0.005,
+          "max_box_area": 0.95,
+          "max_aspect_ratio": 10.0,
+          "duplicate_iou": 0.9
+        },
+        "pipeline": {
+          "output_dir": "pseudo/coco",
+          "decode_workers": 4,
+          "queue_batches": 2,
+          "progress_interval": 1.0,
+          "rolling_seconds": 30.0,
+          "fsync": true,
+          "seed": 0
+        },
+        "benchmark": {
+          "smoke_images": 100,
+          "scaling_images": 1000,
+          "confirmation_images": 10000,
+          "repeats": 2,
+          "min_stability_ratio": 0.85,
+          "batch_sizes": [
+            8,
+            16,
+            32,
+            64,
+            128
+          ],
+          "worker_counts": [],
+          "max_workers": 0,
+          "preview_images": 64,
+          "imagenet_images": 1281167,
+          "target_images_per_sec": 14.83
+        },
+        "train": {
+          "run_name": "coco-yolo11n",
+          "epochs": 100,
+          "image_size": 640,
+          "batch_size": 16,
+          "workers": 8,
+          "device": "auto",
+          "seed": 0,
+          "patience": 30,
+          "progress_interval": 10.0
+        }
+      }
+    },
+    {
+      "images_total": 2,
+      "images_processed": 2,
+      "images_skipped": 0,
+      "images_failed": 0,
+      "images_completed": 2,
+      "elapsed_seconds": 0.8398697079974227,
+      "throughput_images_per_sec": 2.3813217466418464,
+      "timing_seconds": {
+        "decode_seconds": 0.24625208300858503,
+        "dino_seconds": 0.6407559580038651,
+        "maskcut_seconds": 0.3449081670041778,
+        "bbox_seconds": 0.00022562599770026281,
+        "write_seconds": 0.003084625001065433,
+        "queue_seconds": 0.0028376659902278334,
+        "backpressure_seconds": 9.159994078800082e-07,
+        "decode_wait_seconds": 0.018530957997427322
+      },
+      "timing_ms_per_image": {
+        "decode": 123.12604150429252,
+        "dino": 320.37797900193254,
+        "maskcut": 172.4540835020889,
+        "bbox": 0.11281299885013141,
+        "write": 1.5423125005327165,
+        "queue": 1.4188329951139167,
+        "backpressure": 0.0004579997039400041,
+        "decode_wait": 9.265478998713661
+      },
+      "quality": {
+        "valid_images": 2,
+        "total_boxes": 11,
+        "mean_boxes_per_image": 5.5,
+        "median_boxes_per_image": 5.5,
+        "zero_box_image_ratio": 0.0,
+        "boxes_per_image_counts": {
+          "5": 1,
+          "6": 1
+        },
+        "bbox_area_distribution": {
+          "bin_edges": [
+            0.0,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1.000001
+          ],
+          "counts": [
+            0,
+            0,
+            3,
+            6,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        "bbox_aspect_ratio_distribution": {
+          "units": "width/height in original image pixels",
+          "bin_edges": [
+            0.0,
+            0.1,
+            0.25,
+            0.5,
+            1.0,
+            2.0,
+            4.0,
+            10.0,
+            1000000.0
+          ],
+          "counts": [
+            0,
+            1,
+            3,
+            4,
+            2,
+            1,
+            0,
+            0
+          ]
+        }
+      },
+      "errors": [],
+      "errors_truncated": 0,
+      "status": "ok",
+      "cpu_workers": 4,
+      "batch_size": 1,
+      "gpu_peak_vram_bytes": 0,
+      "startup_seconds": 0.6076062499996624,
+      "recovery_seconds": 5.537500692298636e-05,
+      "backbone": {
+        "model": "dino_vits16",
+        "parameters": 21665664,
+        "patch_size": 16,
+        "feature_type": "last_attention_keys",
+        "frozen": true,
+        "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+        "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+        "device": "cpu",
+        "mixed_precision": false,
+        "resolution": 512,
+        "amp_float32_retry_batches": 0
+      },
+      "stage": "crowded",
+      "repeat": 0,
+      "configuration": {
+        "dino": {
+          "model": "dino_vits16",
+          "resolution": 512,
+          "device": "auto",
+          "mixed_precision": true
+        },
+        "maskcut": {
+          "tau": 0.15,
+          "epsilon": 1e-05,
+          "max_objects": 12,
+          "min_mask_area": 0.003,
+          "max_mask_iou": 0.5,
+          "crf": false,
+          "all_components": true,
+          "split_depth": 0,
+          "split_min_patches": 8,
+          "split_temperature": 0.05,
+          "split_max_ncut": 0.15,
+          "split_min_cosine_distance": 0.1,
+          "max_instances": 24
+        },
+        "filtering": {
+          "min_box_area": 0.002,
+          "max_box_area": 0.95,
+          "max_aspect_ratio": 10.0,
+          "duplicate_iou": 0.9
+        },
+        "pipeline": {
+          "output_dir": "pseudo/coco-crowded",
+          "decode_workers": 4,
+          "queue_batches": 2,
+          "progress_interval": 1.0,
+          "rolling_seconds": 30.0,
+          "fsync": true,
+          "seed": 0
+        },
+        "benchmark": {
+          "smoke_images": 100,
+          "scaling_images": 1000,
+          "confirmation_images": 10000,
+          "repeats": 2,
+          "min_stability_ratio": 0.85,
+          "batch_sizes": [
+            8,
+            16,
+            32,
+            64,
+            128
+          ],
+          "worker_counts": [],
+          "max_workers": 0,
+          "preview_images": 64,
+          "imagenet_images": 1281167,
+          "target_images_per_sec": 14.83
+        },
+        "train": {
+          "run_name": "coco-yolo11n-crowded",
+          "epochs": 100,
+          "image_size": 640,
+          "batch_size": 16,
+          "workers": 8,
+          "device": "auto",
+          "seed": 0,
+          "patience": 30,
+          "progress_interval": 10.0
+        }
+      }
+    }
+  ],
+  "warnings": [
+    "Experimental splitting may divide one object into parts. More boxes is not proof of better instance recall. Visually check missed objects, merged people, body fragments, and background boxes. This small batch-1 run does NOT qualify full generation."
+  ],
+  "errors": [],
+  "timing_notes": "End-to-end timed wall includes decode, DINO + host/device transfers, queue/IPC, CPU MaskCut, bbox conversion, atomic label/receipt writes and final worker drain. Pool startup, kernel warmup, discovery and resume scanning are separately recorded. Stage ms/image are summed service times across workers and overlap; do not add them as wall time. Filesystem cache is not flushed between candidates.",
+  "quality": {
+    "baseline": {
+      "valid_images": 2,
+      "total_boxes": 3,
+      "mean_boxes_per_image": 1.5,
+      "median_boxes_per_image": 1.5,
+      "zero_box_image_ratio": 0.0,
+      "boxes_per_image_counts": {
+        "1": 1,
+        "2": 1
+      },
+      "bbox_area_distribution": {
+        "bin_edges": [
+          0.0,
+          0.005,
+          0.01,
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.000001
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          2,
+          0,
+          1,
+          0,
+          0
+        ]
+      },
+      "bbox_aspect_ratio_distribution": {
+        "units": "width/height in original image pixels",
+        "bin_edges": [
+          0.0,
+          0.1,
+          0.25,
+          0.5,
+          1.0,
+          2.0,
+          4.0,
+          10.0,
+          1000000.0
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          1,
+          2,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "crowded": {
+      "valid_images": 2,
+      "total_boxes": 11,
+      "mean_boxes_per_image": 5.5,
+      "median_boxes_per_image": 5.5,
+      "zero_box_image_ratio": 0.0,
+      "boxes_per_image_counts": {
+        "5": 1,
+        "6": 1
+      },
+      "bbox_area_distribution": {
+        "bin_edges": [
+          0.0,
+          0.005,
+          0.01,
+          0.05,
+          0.1,
+          0.25,
+          0.5,
+          0.75,
+          1.000001
+        ],
+        "counts": [
+          0,
+          0,
+          3,
+          6,
+          1,
+          1,
+          0,
+          0
+        ]
+      },
+      "bbox_aspect_ratio_distribution": {
+        "units": "width/height in original image pixels",
+        "bin_edges": [
+          0.0,
+          0.1,
+          0.25,
+          0.5,
+          1.0,
+          2.0,
+          4.0,
+          10.0,
+          1000000.0
+        ],
+        "counts": [
+          0,
+          1,
+          3,
+          4,
+          2,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "purpose": "Two-image local CPU visual sanity check, not a crowd accuracy evaluation or server throughput benchmark.",
+  "sources": [
+    {
+      "file": "bus.jpg",
+      "origin": "Bundled ultralytics-opencv-headless==8.3.242 asset ultralytics/assets/bus.jpg",
+      "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+    },
+    {
+      "file": "demo4.jpg",
+      "origin": "https://github.com/facebookresearch/CutLER/blob/main/maskcut/imgs/demo4.jpg",
+      "sha256": "6cd32d95d4953c0e486141e3e769aee5d7d1d46d07c2fe26fd0daf40e55e4f5d"
+    }
+  ],
+  "observations": {
+    "bus.jpg": {
+      "baseline_boxes": 1,
+      "crowded_boxes": 5
+    },
+    "demo4.jpg": {
+      "baseline_boxes": 2,
+      "crowded_boxes": 6
+    }
+  },
+  "limits": [
+    "No annotation-based accuracy measured.",
+    "The user-reported failing images were not available.",
+    "Occlusion, merged people, and body-part false positives remain possible.",
+    "Crowded split_depth is 0; optional recursive splitting is not enabled in this run."
+  ]
+}
