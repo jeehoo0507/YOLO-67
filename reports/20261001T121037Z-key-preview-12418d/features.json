@@ -1,0 +1,397 @@
+{
+  "schema_version": 1,
+  "run_id": "20261001T121037Z-key-preview-12418d",
+  "kind": "key-preview",
+  "status": "complete",
+  "created_utc": "2026-10-01T12:10:37.026949+00:00",
+  "git": {
+    "commit_sha": "9c2e2fafc9782973eac8d38adbc12fb75b6c20d6",
+    "branch": "codex/milestone-1",
+    "dirty": false
+  },
+  "command": "./solo key-preview data/key-samples --crowded",
+  "configuration": {
+    "dino": {
+      "model": "dino_vits16",
+      "resolution": 512,
+      "device": "auto",
+      "mixed_precision": true
+    },
+    "maskcut": {
+      "tau": 0.15,
+      "epsilon": 1e-05,
+      "max_objects": 12,
+      "min_mask_area": 0.003,
+      "max_mask_iou": 0.5,
+      "crf": false,
+      "all_components": true,
+      "split_depth": 0,
+      "split_min_patches": 8,
+      "split_temperature": 0.05,
+      "split_max_ncut": 0.15,
+      "split_min_cosine_distance": 0.1,
+      "max_instances": 24
+    },
+    "filtering": {
+      "min_box_area": 0.002,
+      "max_box_area": 0.95,
+      "max_aspect_ratio": 10.0,
+      "duplicate_iou": 0.9
+    },
+    "pipeline": {
+      "output_dir": "pseudo/coco-crowded",
+      "decode_workers": 4,
+      "queue_batches": 2,
+      "progress_interval": 1.0,
+      "rolling_seconds": 30.0,
+      "fsync": true,
+      "seed": 0
+    },
+    "benchmark": {
+      "smoke_images": 100,
+      "scaling_images": 1000,
+      "confirmation_images": 10000,
+      "repeats": 2,
+      "min_stability_ratio": 0.85,
+      "batch_sizes": [
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "worker_counts": [],
+      "max_workers": 0,
+      "preview_images": 64,
+      "imagenet_images": 1281167,
+      "target_images_per_sec": 14.83
+    },
+    "train": {
+      "run_name": "coco-yolo11n-crowded",
+      "epochs": 100,
+      "image_size": 640,
+      "batch_size": 16,
+      "workers": 8,
+      "device": "auto",
+      "seed": 0,
+      "patience": 30,
+      "progress_interval": 10.0
+    }
+  },
+  "system": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": 14,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 25238683648,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "dataset_root": "/Users/choejihu/Documents/ChatGPT/SOLO/data/key-samples",
+  "runs": [],
+  "warnings": [],
+  "errors": [],
+  "timing_notes": "End-to-end timed wall includes decode, DINO + host/device transfers, queue/IPC, CPU MaskCut, bbox conversion, atomic label/receipt writes and final worker drain. Pool startup, kernel warmup, discovery and resume scanning are separately recorded. Stage ms/image are summed service times across workers and overlap; do not add them as wall time. Filesystem cache is not flushed between candidates.",
+  "samples": [
+    {
+      "image": "demo1.jpg",
+      "sha256": "26791b0963a272f39708b12ab5939372755242d38b6a0b4a16f690f3315d1346",
+      "key_shape": [
+        1024,
+        384
+      ],
+      "grid": [
+        32,
+        32
+      ],
+      "pca_explained_variance_ratio": [
+        0.3123775667659386,
+        0.1613598115819855,
+        0.060137166176926014
+      ],
+      "masks": 1,
+      "boxes_xywh_normalized": [
+        [
+          0.3125,
+          0.484375,
+          0.25,
+          0.78125
+        ]
+      ],
+      "seconds": 0.6165017919993261,
+      "visualization": "sample-01.jpg"
+    },
+    {
+      "image": "bus.jpg",
+      "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63",
+      "key_shape": [
+        1024,
+        384
+      ],
+      "grid": [
+        32,
+        32
+      ],
+      "pca_explained_variance_ratio": [
+        0.18939959756028962,
+        0.08906041095812178,
+        0.07457484561309438
+      ],
+      "masks": 5,
+      "boxes_xywh_normalized": [
+        [
+          0.5,
+          0.4375,
+          1.0,
+          0.4375
+        ],
+        [
+          0.28125,
+          0.59375,
+          0.0625,
+          0.1875
+        ],
+        [
+          0.125,
+          0.609375,
+          0.25,
+          0.46875
+        ],
+        [
+          0.359375,
+          0.578125,
+          0.21875,
+          0.40625
+        ],
+        [
+          0.9375,
+          0.59375,
+          0.125,
+          0.4375
+        ]
+      ],
+      "seconds": 0.6069625840027584,
+      "visualization": "sample-02.jpg"
+    },
+    {
+      "image": "demo3.jpg",
+      "sha256": "beb32643e1c3374ad3caf3bb7daa9f28521a30bbb499cd177a4c45ba4e62c27a",
+      "key_shape": [
+        1024,
+        384
+      ],
+      "grid": [
+        32,
+        32
+      ],
+      "pca_explained_variance_ratio": [
+        0.25969466090966226,
+        0.13148511261962606,
+        0.09229166267503806
+      ],
+      "masks": 11,
+      "boxes_xywh_normalized": [
+        [
+          0.578125,
+          0.5,
+          0.53125,
+          0.1875
+        ],
+        [
+          0.28125,
+          0.1875,
+          0.3125,
+          0.1875
+        ],
+        [
+          0.734375,
+          0.75,
+          0.40625,
+          0.125
+        ],
+        [
+          0.96875,
+          0.75,
+          0.0625,
+          0.1875
+        ],
+        [
+          0.5,
+          0.625,
+          0.0625,
+          0.0625
+        ],
+        [
+          0.25,
+          0.09375,
+          0.5,
+          0.1875
+        ],
+        [
+          0.921875,
+          0.875,
+          0.15625,
+          0.25
+        ],
+        [
+          0.53125,
+          0.59375,
+          0.1875,
+          0.1875
+        ],
+        [
+          0.046875,
+          0.390625,
+          0.09375,
+          0.15625
+        ],
+        [
+          0.296875,
+          0.265625,
+          0.09375,
+          0.09375
+        ],
+        [
+          0.34375,
+          0.40625,
+          0.0625,
+          0.0625
+        ]
+      ],
+      "seconds": 1.1808787920017494,
+      "visualization": "sample-03.jpg"
+    },
+    {
+      "image": "demo2.jpg",
+      "sha256": "fafb2dbcab0fd3b9175d846e10abde31dc8cc15c295425527d75f90f882fe7e5",
+      "key_shape": [
+        1024,
+        384
+      ],
+      "grid": [
+        32,
+        32
+      ],
+      "pca_explained_variance_ratio": [
+        0.30031887615263303,
+        0.15756220462009804,
+        0.06269484295005613
+      ],
+      "masks": 3,
+      "boxes_xywh_normalized": [
+        [
+          0.296875,
+          0.265625,
+          0.46875,
+          0.53125
+        ],
+        [
+          0.796875,
+          0.578125,
+          0.28125,
+          0.34375
+        ],
+        [
+          0.515625,
+          0.625,
+          0.46875,
+          0.3125
+        ]
+      ],
+      "seconds": 0.7104650830005994,
+      "visualization": "sample-04.jpg"
+    },
+    {
+      "image": "demo4.jpg",
+      "sha256": "6cd32d95d4953c0e486141e3e769aee5d7d1d46d07c2fe26fd0daf40e55e4f5d",
+      "key_shape": [
+        1024,
+        384
+      ],
+      "grid": [
+        32,
+        32
+      ],
+      "pca_explained_variance_ratio": [
+        0.3042295642256627,
+        0.09866209829984865,
+        0.05714677418026905
+      ],
+      "masks": 6,
+      "boxes_xywh_normalized": [
+        [
+          0.53125,
+          0.78125,
+          0.3125,
+          0.3125
+        ],
+        [
+          0.3125,
+          0.46875,
+          0.5,
+          0.1875
+        ],
+        [
+          0.765625,
+          0.546875,
+          0.28125,
+          0.28125
+        ],
+        [
+          0.78125,
+          0.171875,
+          0.25,
+          0.21875
+        ],
+        [
+          0.078125,
+          0.265625,
+          0.15625,
+          0.15625
+        ],
+        [
+          0.203125,
+          0.03125,
+          0.21875,
+          0.0625
+        ]
+      ],
+      "seconds": 1.0964197080029408,
+      "visualization": "sample-05.jpg"
+    }
+  ],
+  "notes": [
+    "DINO v1 ViT-S/16, frozen. Last-block key projection, excluding CLS.",
+    "PCA RGB shows only three components of normalized 384D keys. Colors are per-image, not classes, object IDs, attention weights, or probabilities.",
+    "MaskCut consumes all 384 key channels, NOT the PCA RGB image.",
+    "Mask colors match retained box IDs; gray masks were filtered out. Different images may reuse colors. Boxes are class 0 = object, not YOLO predictions.",
+    "Square-resized model input maps back to original coordinates; no crop DINO calls.",
+    "Qualitative examples only; no instance ground truth or recognition accuracy measured."
+  ],
+  "backbone": {
+    "model": "dino_vits16",
+    "parameters": 21665664,
+    "patch_size": 16,
+    "feature_type": "last_attention_keys",
+    "frozen": true,
+    "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+    "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+    "device": "cpu",
+    "mixed_precision": false,
+    "resolution": 512,
+    "amp_float32_retry_batches": 0
+  }
+}
