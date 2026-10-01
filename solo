@@ -47,6 +47,7 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 case "${1:-}" in
+  crop-demo) exec uv run --directory "$SOLO_ROOT" --frozen --group comparison --group sam-comparison -- python -m solo "$@" ;;
   compare-sam) exec uv run --directory "$SOLO_ROOT" --frozen --group sam-comparison -- python -m solo "$@" ;;
   compare-backbones) exec uv run --directory "$SOLO_ROOT" --frozen --group comparison -- python -m solo "$@" ;;
   test) shift; exec uv run --directory "$SOLO_ROOT" --frozen --group dev -- python -m pytest "$@" ;;

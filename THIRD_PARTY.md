@@ -87,3 +87,20 @@ correctness reports with their source recorded. No ImageNet data is bundled.
   constraints are locked by `pyproject.toml` and `uv.lock`.
 - SAM is trained with segmentation supervision. This experiment does not use
   target COCO annotations or human prompts, but is not strictly unsupervised.
+
+## PlantDoc few-shot diagnostic
+
+- Singh, Jain, Jain, Kayal, Kumawat and Batra, *PlantDoc: A Dataset for Visual Plant
+  Disease Detection* (2020), CC BY 4.0, as distributed by the authors.
+- [Cropped support data](https://github.com/pratikkayal/PlantDoc-Dataset), revision
+  `5467f6012d78d1c446145d5f582da6096f852ae8`.
+- [Original query images and evaluation annotations](https://github.com/pratikkayal/PlantDoc-Object-Detection-Dataset),
+  revision `4730a233a555b30ee98e0879c63ad25d82407455`.
+- Source URLs and hashes are in `configs/crop-demo.json`. Report previews resize and
+  overlay original images. Original images remain in ignored `data/`.
+- Query annotations are used only for localization evaluation and a separately
+  reported oracle-ROI matching diagnostic, never for automatic proposals or training.
+- Optional diagnostic COCO-pretrained Ultralytics YOLO11n uses pinned release
+  `v8.3.0/yolo11n.pt`, SHA256
+  `0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1`.
+  This is explicitly a supervised control; SOLO training still initializes from YAML.

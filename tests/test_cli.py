@@ -92,3 +92,11 @@ def test_sam_comparison_uses_same_crowded_baseline(monkeypatch):
     assert calls[0][1].dino.resolution == 512
     assert calls[0][1].maskcut.max_objects == 12
     assert calls[0][2:] == (20, 16, 4)
+
+
+def test_crop_demo_routes_without_production_training(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.crop_demo.crop_demo", lambda: calls.append("demo"))
+    assert main(["crop-demo"]) == 0
+    assert calls == ["demo"]

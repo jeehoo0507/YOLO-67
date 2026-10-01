@@ -147,6 +147,39 @@ support 예시와의 최종 매칭 성능은 아직 구현·검증되지 않았�
 v1이 최종 개인화 목표에 충분하다고 확정한 것은 아닙니다. 특히 `crowded`는 배경·신체 일부를 추가 박스로 잡을 수
 있으므로 큰 학습을 시작하기 전에 실패 장면도 확인해야 합니다.
 
+## 농작물 상태 few-shot 샘플 실험
+
+```bash
+git pull --ff-only
+./solo crop-demo
+```
+
+고정된 PlantDoc 토마토 자료에서 **건강 / Early blight / Yellow virus** 예시를 각 1장,
+테스트를 각 3장 사용합니다. 실외·화분·재배 배경이 있는 이미지를 실행 결과를 보기 전에
+골랐으며, 같은 농장의 넓은 밭 사진을 검증한 데이터는 아닙니다. 자료의 상태 이름은 데이터셋
+주석이며 병해의 확진으로 해석하면 안 됩니다. 출처·고정 revision·SHA256·선정 사유는
+`configs/crop-demo.json`에 있습니다. 지원 예시는 cropped train, 테스트는 원본 TEST split입니다.
+
+명령 하나가 필요한 샘플·가중치를 레포 내부에 준비하고 다음을 비교합니다:
+
+- 후보 생성: 일반 COCO 사전학습 YOLO11n / DINO v1 MaskCut / SAM 2.1 Tiny 자동 마스크.
+- 상태 비교: frozen DINO v1 / v2 / v3의 최종 patch 특징으로 같은 후보를 ROI pooling하여
+  support prototype과 cosine 비교. 각 이미지에서 backbone당 forward는 한 번뿐입니다.
+- 위치 평가: 공개 PlantDoc 박스는 **평가에만** 사용하여 IoU ≥ 0.5인 잎을 셉니다.
+- 별도 진단: 정답 잎 위치를 알고 있다고 가정한 ROI 상태 분류도 표시합니다.
+  이 수치는 실제 검출 성능이 아닙니다.
+
+**현재 컴퓨터에 학습된 SOLO 전용 YOLO 가중치가 없어서 COCO YOLO를 비교 대조군으로 씁니다.**
+클래스 이름을 무시해도 COCO의 잎 검출 능력이 생기는 것은 아닙니다. 전용 `0=object` YOLO를
+학습하거나 검증한 결과로 해석하지 마세요. 모델 학습·feature 주입은 하지 않습니다.
+이번 실험은 세 상태 중 하나를 고르는 분류이며 `unknown`/배경 거부 기준은 검증하지 않았습니다.
+
+`reports/<run-id>-crop-demo-*/support.jpg`, 상태별 비교 이미지, `summary.md`, `results.json`을
+만듭니다. 박스 색은 초록=healthy, 빨강=early blight, 노랑=yellow virus이고 숫자는 cosine
+유사도입니다(정확도/확률 아님). `v2-`, `v3-` 그림은 후보 박스는 같고 특징 비교 모델만 다릅니다.
+기존 학습 라벨·가중치는 유지합니다. 모든 다운로드는 레포 내부이며, CPU 실험은 처리량
+benchmark를 대체하지 않습니다.
+
 ## SAM 2와 DINO/MaskCut 비교
 
 실측 결과: [같은 COCO 20장 비교](reports/20261001T123557Z-sam-comparison-1953d6/review.md),
