@@ -147,6 +147,45 @@ support 예시와의 최종 매칭 성능은 아직 구현·검증되지 않았�
 v1이 최종 개인화 목표에 충분하다고 확정한 것은 아닙니다. 특히 `crowded`는 배경·신체 일부를 추가 박스로 잡을 수
 있으므로 큰 학습을 시작하기 전에 실패 장면도 확인해야 합니다.
 
+## SAM 2와 DINO/MaskCut 비교
+
+```bash
+git pull --ff-only
+./solo compare-sam
+# 같은 개인 이미지 최대 20장으로 비교:
+./solo compare-sam data/check --limit 20
+```
+
+같은 이미지에서 **DINO v1 ViT-S/16 + MaskCut**과 공식 **SAM 2.1 Hiera-Tiny**의
+자동 마스크를 비교합니다. 사람이 클릭하거나 정답 박스를 제공하지 않고, SAM의 박스 개수도
+고정하지 않습니다. 기본 입력은 `data/coco/images/val2017`이며, SAM 패키지는 별도 uv 그룹,
+가중치 약 156MB는 `weights/`에만 설치·저장합니다. CUDA extension을 빌드하지 않으므로
+호스트에 CUDA toolkit을 추가 설치할 필요가 없습니다.
+
+`reports/<run-id>-sam-comparison-*/`에 이미지별 그림과 5장씩 묶은 비교 그림,
+좌표·마스크 품질 점수·처리 시간·설정·모델 SHA256을 저장합니다. 그림은 왼쪽부터
+**DINO 박스 / SAM 박스 / SAM 마스크**입니다. DINO는 crowded 512px, SAM은 학습된
+1024px 입력을 사용하므로 인코더 구조 하나만의 우열을 비교하는 실험은 아닙니다.
+두 모델에 같은 최종 면적·종횡비 필터를 적용하며 SAM에는 자체 마스크 품질·중복 필터도 있습니다.
+
+CPU에서도 비교할 수 있도록 기본 탐색은 16×16 자동 점, PyTorch CPU 스레드는 4개입니다.
+공식 기본 밀도인 32×32로 확인하려면 `--points-per-side 32`를 추가합니다.
+`--cpu-threads 1`로 CPU 사용량을 줄일 수 있습니다. 촘촘한 탐색은 더 느리고 작은 객체
+검출에 영향을 줄 수 있습니다. crop 재탐색과 CUDA 연결 영역 후처리는 비활성화합니다.
+시간은 워밍업 후 이미지당 한 번 측정한 값으로, 서버의 sustained throughput은 아닙니다.
+
+**ViT는 모델 구조, DINO는 자기지도 학습 방식, SAM은 분할 모델입니다.**
+SAM 1은 일반 ViT 이미지 인코더를, SAM 2는 **Hiera라는 계층형 Vision Transformer**를
+사용합니다. 따라서 SAM도 Vision Transformer 계열을 사용합니다.
+주요 차이는 DINO의 자기지도 특징으로 MaskCut을 수행하는 것과, SAM의 마스크 지도학습으로
+얻은 분할 능력을 사용하는 것입니다. COCO 정답 주석을 이번 실행에 쓰지는 않지만,
+SAM 사용 시 원래의 엄격한 비지도 사전학습 조건은 달라집니다.
+SAM의 마스크 품질 점수도 ‘완전한 객체일 확률’이 아니므로 신체 일부·배경·중첩 박스가
+남을 수 있습니다. 비교 명령은 기존 생성 라벨이나 YOLO 가중치를 변경하지 않습니다.
+
+출처: [SAM 2 공식 코드](https://github.com/facebookresearch/sam2),
+[Hiera 논문](https://arxiv.org/abs/2306.00989).
+
 ## DINO v1 / v2 / v3 간단 비교
 
 ```bash

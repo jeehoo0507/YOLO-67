@@ -71,3 +71,19 @@ correctness reports with their source recorded. No ImageNet data is bundled.
   safetensors and strict state matching, and identified by SHA256 in comparison reports.
 - These are feature-only inference experiments. No v2/v3 weights or source code are vendored,
   and the v1 production pseudo-label fingerprint/resume contract remains unchanged.
+
+## Optional SAM comparison
+
+- Official [SAM 2](https://github.com/facebookresearch/sam2), revision
+  `2b90b9f5ceec907a1c18123530e92e794ad901a4`, Apache-2.0. Optional CUDA component is
+  disabled with `SAM2_BUILD_CUDA=0`; its connected-component cleanup is not used.
+- SAM 2.1 Hiera-Tiny official checkpoint, Apache-2.0, SHA256
+  `7402e0d864fa82708a20fbd15bc84245c2f26dff0eb43a4b5b93452deb34be69`.
+  Downloaded from Meta's `dl.fbaipublicfiles.com/segment_anything_2/092824/` to
+  `weights/`. SHA matches the LFS object in Meta's
+  [official model repository](https://huggingface.co/facebook/sam2.1-hiera-tiny/tree/main).
+- Installed only by `./solo compare-sam` in the repository-local `sam-comparison`
+  uv group. No source/weights are vendored. Code, dependency versions and build
+  constraints are locked by `pyproject.toml` and `uv.lock`.
+- SAM is trained with segmentation supervision. This experiment does not use
+  target COCO annotations or human prompts, but is not strictly unsupervised.

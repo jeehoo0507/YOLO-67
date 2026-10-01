@@ -81,3 +81,14 @@ def test_backbone_comparison_defaults(monkeypatch):
     assert main(["compare-backbones"]) == 0
     assert calls[0][0] == ROOT / "data/coco/images/val2017"
     assert calls[0][2:] == (5, 3)
+
+
+def test_sam_comparison_uses_same_crowded_baseline(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.sam_comparison.compare_sam", lambda *args: calls.append(args))
+    assert main(["compare-sam"]) == 0
+    assert calls[0][0] == ROOT / "data/coco/images/val2017"
+    assert calls[0][1].dino.resolution == 512
+    assert calls[0][1].maskcut.max_objects == 12
+    assert calls[0][2:] == (20, 16, 4)

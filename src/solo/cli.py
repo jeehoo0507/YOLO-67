@@ -22,6 +22,12 @@ def main(argv: list[str] | None = None) -> int:
         prog="./solo", description="SOLO: COCO images → DINO/MaskCut boxes → YOLO object detector"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    sam = commands.add_parser("compare-sam", help="Compare DINO/MaskCut and automatic SAM 2.1")
+    sam.add_argument("dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017")
+    sam.add_argument("--limit", type=int, default=20)
+    sam.add_argument("--points-per-side", type=int, default=16)
+    sam.add_argument("--cpu-threads", type=int, default=4)
+    sam.add_argument("--config", type=Path, default=ROOT / "configs/crowded.toml")
     backbones = commands.add_parser("compare-backbones", help="Compare DINO v1/v2/v3 on CPU")
     backbones.add_argument(
         "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
@@ -122,7 +128,13 @@ def main(argv: list[str] | None = None) -> int:
             download_coco()
         else:
             config = load_config(args.config)
-            if args.command == "compare-backbones":
+            if args.command == "compare-sam":
+                from .sam_comparison import compare_sam
+
+                compare_sam(
+                    args.dataset, config, args.limit, args.points_per_side, args.cpu_threads,
+                )
+            elif args.command == "compare-backbones":
                 from .backbone_comparison import compare_backbones
 
                 compare_backbones(args.dataset, config, args.limit, args.repeats)
