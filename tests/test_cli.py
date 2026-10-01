@@ -70,3 +70,14 @@ def test_key_preview_uses_five_images_with_explicit_profile(monkeypatch):
     assert calls[0][1].dino.model == "dino_vits16"
     assert calls[0][1].dino.resolution == 512
     assert calls[0][2] == 5
+
+
+def test_backbone_comparison_defaults(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr(
+        "solo.backbone_comparison.compare_backbones", lambda *args: calls.append(args)
+    )
+    assert main(["compare-backbones"]) == 0
+    assert calls[0][0] == ROOT / "data/coco/images/val2017"
+    assert calls[0][2:] == (5, 3)

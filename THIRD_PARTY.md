@@ -55,3 +55,19 @@ correctness reports with their source recorded. No ImageNet data is bundled.
 - [COCO 2017](https://cocodataset.org/#download) train2017 and val2017 images only.
 - Downloaded from the official `images.cocodataset.org` S3 bucket using HTTPS path-style URLs.
 - Images and archives are ignored by Git. No COCO annotation archive is downloaded.
+
+## Optional DINO backbone comparison
+
+- [timm](https://github.com/huggingface/pytorch-image-models), Apache-2.0, pinned to `1.0.24`.
+  Used only by `./solo compare-backbones`, through a project-local uv dependency group.
+- [DINOv2 ViT-S/14](https://huggingface.co/timm/vit_small_patch14_dinov2.lvd142m),
+  Apache-2.0; timm revision `4610ca143709d58a633b6397a74412c2c3842454`.
+- [DINOv3 ViT-S/16](https://huggingface.co/timm/vit_small_patch16_dinov3.lvd1689m),
+  [DINOv3 License](https://ai.meta.com/resources/models-and-libraries/dinov3-license/);
+  timm revision `3bf4720a82ec2066db88137180ff1f83a675cef0`.
+  This is the timm conversion, not a claim of bit-identical Meta reference outputs.
+  Its model card documents RoPE numerical differences and omission of zero QKV biases.
+- Checkpoints are downloaded to ignored repository-local `.cache/huggingface/`, loaded with
+  safetensors and strict state matching, and identified by SHA256 in comparison reports.
+- These are feature-only inference experiments. No v2/v3 weights or source code are vendored,
+  and the v1 production pseudo-label fingerprint/resume contract remains unchanged.

@@ -137,9 +137,47 @@ support 예시와의 최종 매칭 성능은 아직 구현·검증되지 않았�
 [DINOv3](https://ai.meta.com/research/publications/dinov3/)는 Gram anchoring 등으로 dense feature
 품질을 강화했습니다. 향후 few-shot ROI 특징 비교에서는 v3를 우선 비교할 후보로 봅니다.
 하지만 논문의 일반적인 dense 성능이 이 프로젝트의 **개별 객체 박스 품질**을 보증하지는
-않습니다. v2/v3를 같은 데이터에서 직접 비교한 결과는 아직 없고, v1이 최종 개인화 목표에
-충분하다고 확정한 것도 아닙니다. 특히 `crowded`는 배경·신체 일부를 추가 박스로 잡을 수
+않습니다. 아래 `compare-backbones`로 세 버전을 같은 이미지에서 비교할 수 있지만,
+v1이 최종 개인화 목표에 충분하다고 확정한 것은 아닙니다. 특히 `crowded`는 배경·신체 일부를 추가 박스로 잡을 수
 있으므로 큰 학습을 시작하기 전에 실패 장면도 확인해야 합니다.
+
+## DINO v1 / v2 / v3 간단 비교
+
+```bash
+./solo compare-backbones
+# 같은 개인 이미지 5장으로 비교:
+./solo compare-backbones data/check --limit 5
+```
+
+비교 전용 명령이며 production backbone이나 기존 pseudo-label은 바꾸지 않습니다.
+필요한 timm 및 가중치도 `.venv`, `.cache/huggingface/` 등 **레포 내부**에만 준비합니다.
+v2/v3는 공개된 timm ViT-S 변환 가중치의 고정 revision을 사용하고 SHA256을 기록합니다.
+패키지는 별도 `comparison` dependency group과 `uv.lock`으로 고정되어 있습니다.
+
+- 동일 이미지·448px·FP32·CPU 1 thread·batch 1·명시적 attention 연산을 사용합니다.
+  다운로드·모델 초기화 후 1회 warmup, 이미지마다 기본 3회 반복합니다.
+- v1/v3는 patch 16(28×28), v2는 patch 14(32×32)입니다. 입력 크기는 같지만 token 수가
+  달라 v2가 더 많은 연산을 합니다. **서버 GPU throughput 벤치마크가 아닙니다.**
+- 한 번의 forward에서 `keys`(마지막 QKV의 K, v3는 RoPE 적용 전)와 `tokens`(최종 LayerNorm
+  patch 특징)를 함께 얻습니다. CLS/register token은 제외합니다.
+- 동일 MaskCut 설정으로 비교한 뒤, **최종 patch 특징만** 임계값 0.5·0.7·0.9를 모든 모델에
+  똑같이 적용합니다. 모델별 특징 분포가 다르므로 기존 tau=0.15의 단순 교체 결과만으로
+  모델의 일반적인 우열을 판단하지 않습니다. sweep은 특징을 재사용합니다.
+
+```text
+reports/<run-id>-backbones-*/
+  summary.md / comparison.json       # 조건, 모델/가중치, 반복 시간, 박스 좌표
+  keys_boxes.jpg / tokens_boxes.jpg  # 원본 | v1 | v2 | v3 (기존 tau)
+  keys_maps.jpg / tokens_maps.jpg    # PCA 특징 비교
+  tokens_tau_0.5.jpg                 # 추가 임계값 비교 (0.7, 0.9도 저장)
+  v2_keys_pipeline.jpg              # 원본 → 특징 → 마스크 → 박스
+  v3_tokens_pipeline.jpg            # 각 버전/특징에 대해 별도 그림
+```
+
+시간은 이미지별 반복의 median을 구한 뒤 이미지들에 대해 평균한 값입니다. forward와
+MaskCut/박스/파일쓰기 시간을 따로 기록하며, PCA·그림 저장·다운로드는 제외합니다.
+박스 개수는 정확도가 아닙니다. 정답 주석이 없는 이 비교에서는 mAP나 정확도 점수를 만들지
+않습니다. 특히 5장으로 고른 threshold는 다른 군중 이미지에서 독립적으로 검증해야 합니다.
 
 ## 학습한 YOLO 테스트
 

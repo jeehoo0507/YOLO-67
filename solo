@@ -17,6 +17,8 @@ export XDG_BIN_HOME="$SOLO_ROOT/.local/bin"
 export TORCH_HOME="$SOLO_ROOT/.cache/torch"
 export HF_HOME="$SOLO_ROOT/.cache/huggingface"
 export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
+export HF_HUB_DISABLE_TELEMETRY=1
+export HF_HUB_DISABLE_XET=1
 export ULTRALYTICS_CONFIG_DIR="$SOLO_ROOT/.config/ultralytics"
 export YOLO_CONFIG_DIR="$ULTRALYTICS_CONFIG_DIR"
 export YOLO_AUTOINSTALL=false
@@ -43,6 +45,7 @@ if ! command -v uv >/dev/null 2>&1; then
   exit 1
 fi
 case "${1:-}" in
+  compare-backbones) exec uv run --directory "$SOLO_ROOT" --frozen --group comparison -- python -m solo "$@" ;;
   test) shift; exec uv run --directory "$SOLO_ROOT" --frozen --group dev -- python -m pytest "$@" ;;
   check) shift; exec uv run --directory "$SOLO_ROOT" --frozen --group dev -- ruff check "$@" ;;
   *) exec uv run --directory "$SOLO_ROOT" --frozen -- python -m solo "$@" ;;

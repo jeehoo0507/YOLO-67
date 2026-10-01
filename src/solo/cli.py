@@ -22,6 +22,13 @@ def main(argv: list[str] | None = None) -> int:
         prog="./solo", description="SOLO: COCO images → DINO/MaskCut boxes → YOLO object detector"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    backbones = commands.add_parser("compare-backbones", help="Compare DINO v1/v2/v3 on CPU")
+    backbones.add_argument(
+        "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
+    )
+    backbones.add_argument("--limit", type=int, default=5)
+    backbones.add_argument("--repeats", type=int, default=3)
+    backbones.add_argument("--config", type=Path, default=ROOT / "configs/crowded.toml")
     keys = commands.add_parser("key-preview", help="Show original -> DINO keys -> masks -> boxes")
     keys.add_argument(
         "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
@@ -115,7 +122,11 @@ def main(argv: list[str] | None = None) -> int:
             download_coco()
         else:
             config = load_config(args.config)
-            if args.command == "key-preview":
+            if args.command == "compare-backbones":
+                from .backbone_comparison import compare_backbones
+
+                compare_backbones(args.dataset, config, args.limit, args.repeats)
+            elif args.command == "key-preview":
                 from .key_preview import key_preview
 
                 key_preview(args.dataset, config, args.limit)
