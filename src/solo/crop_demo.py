@@ -385,6 +385,11 @@ def crop_demo():
                 "|---|---:|---:|",
             ]
         )
+        for key, m in payload["metrics"].items():
+            lines.append(
+                f"| {key} | {m['localized']}/{m['reference_leaves']} | "
+                f"{m['localized_and_correct']}/{m['reference_leaves']} |"
+            )
         lines.extend(["", "| Reference ROI diagnostic | Healthy | Early blight | Yellow virus |",
                       "|---|---:|---:|---:|"])
         for version in ("v1", "v2", "v3"):
@@ -395,11 +400,6 @@ def crop_demo():
                     counts = metric["by_class"].get(name, {"correct": 0, "total": 0})
                     cells.append(f"{counts['correct']}/{counts['total']}")
                 lines.append(f"| {version} | " + " | ".join(cells) + " |")
-        for key, m in payload["metrics"].items():
-            lines.append(
-                f"| {key} | {m['localized']}/{m['reference_leaves']} | "
-                f"{m['localized_and_correct']}/{m['reference_leaves']} |"
-            )
         lines.extend(
             [
                 "",
