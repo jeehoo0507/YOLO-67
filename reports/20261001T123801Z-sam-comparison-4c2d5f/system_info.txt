@@ -1,0 +1,22 @@
+{
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "cpu": "arm",
+  "physical_cores": 14,
+  "logical_cores": 14,
+  "effective_cpus": 14,
+  "ram_total_bytes": 51539607552,
+  "ram_available_bytes": 23951163392,
+  "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+  "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+  "pytorch": "2.7.1",
+  "cuda_runtime": null,
+  "numpy": "2.2.6",
+  "scipy": "1.16.3",
+  "gpus": [],
+  "thread_env": {
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "nvidia_smi": "unavailable"
+}

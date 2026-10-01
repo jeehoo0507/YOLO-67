@@ -1,0 +1,130 @@
+{
+  "source": "https://s3.amazonaws.com/images.cocodataset.org/zips/val2017.zip",
+  "etag": "\"d366be60d3dc737327160d62453e3973-98\"",
+  "seed": "solo-v1-more-20261001",
+  "pool": 5000,
+  "selection": "20 smallest SHA256(seed:zip-member-name); no image or annotation filtering",
+  "files": [
+    {
+      "member": "val2017/000000520910.jpg",
+      "file": "000000520910.jpg",
+      "bytes": 101892,
+      "sha256": "bee8191e06b40c9d08da28f576fe09b8822c96c4477b91476aa9e7cad7aeb773"
+    },
+    {
+      "member": "val2017/000000540466.jpg",
+      "file": "000000540466.jpg",
+      "bytes": 218671,
+      "sha256": "be4515a5675c94535883e284832654b573b484170dc5f7e480ab456d9bda706c"
+    },
+    {
+      "member": "val2017/000000460841.jpg",
+      "file": "000000460841.jpg",
+      "bytes": 87549,
+      "sha256": "9bbf60c0ed50dde4a0b84c75b198496f321df872e28a7b999b3d43d777a988d1"
+    },
+    {
+      "member": "val2017/000000255965.jpg",
+      "file": "000000255965.jpg",
+      "bytes": 145239,
+      "sha256": "c0b097a4efe69c75afd2e8e9552c0c112b17dfded7c8dfa314876790fc1ee8e8"
+    },
+    {
+      "member": "val2017/000000400573.jpg",
+      "file": "000000400573.jpg",
+      "bytes": 205719,
+      "sha256": "e69c9284d1daa751972b08af8edf17cefe5e610f83c046d9c824b7a38ada9cb0"
+    },
+    {
+      "member": "val2017/000000343524.jpg",
+      "file": "000000343524.jpg",
+      "bytes": 75097,
+      "sha256": "0f4f1fe24fe819690c356e0f4261ce6eace0e0ae4f478b5e4dce5c8d511e408b"
+    },
+    {
+      "member": "val2017/000000073533.jpg",
+      "file": "000000073533.jpg",
+      "bytes": 133483,
+      "sha256": "6e49483e35cd110eea21970e066ba7101bac0e41327723fb9f142e62443ab3aa"
+    },
+    {
+      "member": "val2017/000000406570.jpg",
+      "file": "000000406570.jpg",
+      "bytes": 72465,
+      "sha256": "2790f0224bf5f6315f6480b3c5dc46130dfeeffb1a12bb58b6d686c1cd616065"
+    },
+    {
+      "member": "val2017/000000409424.jpg",
+      "file": "000000409424.jpg",
+      "bytes": 230636,
+      "sha256": "7c6831c461d6873281520ae1870bb780e113bee5d87e6a8f4423576eeab43ed5"
+    },
+    {
+      "member": "val2017/000000126107.jpg",
+      "file": "000000126107.jpg",
+      "bytes": 104558,
+      "sha256": "deb91b4988babf28cc289521d785b3f4c4e3ae03c50f946ec5a8420484b514d3"
+    },
+    {
+      "member": "val2017/000000209753.jpg",
+      "file": "000000209753.jpg",
+      "bytes": 79333,
+      "sha256": "a5f1d3251846d66aee823f2c57f6538e0b64fd1b97e431114884db519209ca9f"
+    },
+    {
+      "member": "val2017/000000449603.jpg",
+      "file": "000000449603.jpg",
+      "bytes": 197641,
+      "sha256": "fa28d10dbafff22de8c4fa60a3369df1c4a46f611c73c950cb8bfbb883a8da23"
+    },
+    {
+      "member": "val2017/000000112378.jpg",
+      "file": "000000112378.jpg",
+      "bytes": 354538,
+      "sha256": "0fc1b2deb7e443d27c15478dbbe4fa7174732d733e65dafaca2b8b3b32a0ba46"
+    },
+    {
+      "member": "val2017/000000501243.jpg",
+      "file": "000000501243.jpg",
+      "bytes": 219068,
+      "sha256": "563be53973f8385eb1927f5f1ca5c4732272566a45000db7a21f99501ec5e233"
+    },
+    {
+      "member": "val2017/000000191672.jpg",
+      "file": "000000191672.jpg",
+      "bytes": 188399,
+      "sha256": "c29f6d062466b07b3be27b7e85be08663d8636cfc6879fbc07500dccbbb0b5d9"
+    },
+    {
+      "member": "val2017/000000575081.jpg",
+      "file": "000000575081.jpg",
+      "bytes": 90240,
+      "sha256": "88eeff06cafc72e0f228da335eb6c50f397eb0aeebf36565e651912aa96f10c1"
+    },
+    {
+      "member": "val2017/000000049810.jpg",
+      "file": "000000049810.jpg",
+      "bytes": 187706,
+      "sha256": "d8fd48490a34f0f1e206a6206653881036e889e79c022f1ef97fb05dafdccf9a"
+    },
+    {
+      "member": "val2017/000000168458.jpg",
+      "file": "000000168458.jpg",
+      "bytes": 174687,
+      "sha256": "9d79b9739c0ebb2089e3475b9a664ebd982a1b6ed2d93739590a5bbc1f5bbd5e"
+    },
+    {
+      "member": "val2017/000000526103.jpg",
+      "file": "000000526103.jpg",
+      "bytes": 218589,
+      "sha256": "aa71fa226702833f76094ef8a732b7592c3227ce008f5647d3ede1bed3bb516e"
+    },
+    {
+      "member": "val2017/000000580197.jpg",
+      "file": "000000580197.jpg",
+      "bytes": 82343,
+      "sha256": "e3de2e67d44d36afed4cc06bf35aec2b4a7cd3064e5c28c0342c98479ea2717a"
+    }
+  ],
+  "transferred_bytes": 12376114
+}

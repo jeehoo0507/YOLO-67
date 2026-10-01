@@ -149,6 +149,13 @@ v1이 최종 개인화 목표에 충분하다고 확정한 것은 아닙니다. 
 
 ## SAM 2와 DINO/MaskCut 비교
 
+실측 결과: [같은 COCO 20장 비교](reports/20261001T123557Z-sam-comparison-1953d6/review.md),
+[핵심 5장 32×32 탐색 재확인](reports/20261001T123801Z-sam-comparison-4c2d5f/review.md).
+이번 SAM 2.1 Tiny 자동 마스크 설정은 사과·일부 사람의 경계를 더 잘 나누지만,
+두 아이를 온전한 사람 박스 2개로 정리하지 못했습니다. 20장 박스는 DINO 75개,
+SAM 180개였으며, 부위·배경 박스도 포함됩니다. SAM을 검증된 대체 방법으로 기본 적용하지는
+않았습니다. 더 큰 모델이나 다른 필터·프롬프트 방식의 결과까지 대표하는 비교는 아닙니다.
+
 ```bash
 git pull --ff-only
 ./solo compare-sam

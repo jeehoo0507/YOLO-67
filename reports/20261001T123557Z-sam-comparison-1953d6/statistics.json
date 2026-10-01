@@ -1,0 +1,12 @@
+{
+  "dino": {
+    "boxes": 75,
+    "mean_boxes_per_image": 3.75,
+    "zero_box_images": 0
+  },
+  "sam": {
+    "boxes": 180,
+    "mean_boxes_per_image": 9.0,
+    "zero_box_images": 2
+  }
+}

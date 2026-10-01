@@ -1,0 +1,777 @@
+{
+  "schema_version": 1,
+  "run_id": "20261001T123801Z-sam-comparison-4c2d5f",
+  "kind": "sam-comparison",
+  "status": "complete",
+  "created_utc": "2026-10-01T12:38:01.457777+00:00",
+  "git": {
+    "commit_sha": "268c0459fd0b1638fee8f146d02a62bdd755d41a",
+    "branch": "codex/milestone-1",
+    "dirty": false
+  },
+  "command": "./solo compare-sam data/sam-check5 --limit 5 --points-per-side 32",
+  "configuration": {
+    "dino": {
+      "model": "dino_vits16",
+      "resolution": 512,
+      "device": "auto",
+      "mixed_precision": false
+    },
+    "maskcut": {
+      "tau": 0.15,
+      "epsilon": 1e-05,
+      "max_objects": 12,
+      "min_mask_area": 0.003,
+      "max_mask_iou": 0.5,
+      "crf": false,
+      "all_components": true,
+      "split_depth": 0,
+      "split_min_patches": 8,
+      "split_temperature": 0.05,
+      "split_max_ncut": 0.15,
+      "split_min_cosine_distance": 0.1,
+      "max_instances": 24
+    },
+    "filtering": {
+      "min_box_area": 0.002,
+      "max_box_area": 0.95,
+      "max_aspect_ratio": 10.0,
+      "duplicate_iou": 0.9
+    },
+    "pipeline": {
+      "output_dir": "pseudo/coco-crowded",
+      "decode_workers": 4,
+      "queue_batches": 2,
+      "progress_interval": 1.0,
+      "rolling_seconds": 30.0,
+      "fsync": true,
+      "seed": 0
+    },
+    "benchmark": {
+      "smoke_images": 100,
+      "scaling_images": 1000,
+      "confirmation_images": 10000,
+      "repeats": 2,
+      "min_stability_ratio": 0.85,
+      "batch_sizes": [
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "worker_counts": [],
+      "max_workers": 0,
+      "preview_images": 64,
+      "imagenet_images": 1281167,
+      "target_images_per_sec": 14.83
+    },
+    "train": {
+      "run_name": "coco-yolo11n-crowded",
+      "epochs": 100,
+      "image_size": 640,
+      "batch_size": 16,
+      "workers": 8,
+      "device": "auto",
+      "seed": 0,
+      "patience": 30,
+      "progress_interval": 10.0
+    }
+  },
+  "system": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": 14,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 23951163392,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "dataset_root": "/Users/choejihu/Documents/ChatGPT/SOLO/data/sam-check5",
+  "runs": [],
+  "warnings": [
+    "Qualitative comparison; no scored ground truth, mAP, or precision/recall.",
+    "Different architectures, pretraining supervision and resolutions: not a pure ViT test.",
+    "SAM is mask-supervised. No target annotations or manual points/boxes are used here.",
+    "AMG may retain background, nested parts and merged groups; mask IoU is not objectness.",
+    "No crops, CUDA extension, connected-component cleanup or dynamic mask fallback.",
+    "16x16 grid is a CPU preview setting (official default 32x32); may miss small objects."
+  ],
+  "errors": [],
+  "timing_notes": "One unmeasured complete warmup per method. One timed run/image, torch threads=4, FP32. Common PIL decode timed separately. DINO includes its resize/normalization, feature extraction, MaskCut and boxes. SAM includes preprocessing, image encoder, 1024 automatic point prompts in batches of 16, decoder, AMG and shared geometric filters. Loading/download/render/report writes excluded. Not a sustained benchmark.",
+  "samples": [
+    {
+      "image": "000000191672.jpg",
+      "sha256": "c29f6d062466b07b3be27b7e85be08663d8636cfc6879fbc07500dccbbb0b5d9",
+      "visualization": "sample-01.jpg",
+      "decode_seconds": 0.0030197919986676425,
+      "dino_seconds": 0.3598665829995298,
+      "sam_seconds": 18.443522833003954,
+      "dino_boxes": [
+        [
+          0.65625,
+          0.5,
+          0.1875,
+          0.3125
+        ],
+        [
+          0.625,
+          0.453125,
+          0.75,
+          0.59375
+        ],
+        [
+          0.140625,
+          0.484375,
+          0.21875,
+          0.09375
+        ],
+        [
+          0.59375,
+          0.625,
+          0.0625,
+          0.0625
+        ]
+      ],
+      "sam_boxes": [
+        [
+          0.953125,
+          0.9042056074766356,
+          0.046875,
+          0.10747663551401876
+        ],
+        [
+          0.89921875,
+          0.9042056074766356,
+          0.04218749999999993,
+          0.10747663551401876
+        ]
+      ],
+      "sam_amg_count_before_shared_filter": 2,
+      "sam_mask_quality": [
+        {
+          "predicted_iou": 0.9024288654327393,
+          "stability_score": 0.9572553634643555,
+          "area": 866
+        },
+        {
+          "predicted_iou": 0.8885965347290039,
+          "stability_score": 0.9729729890823364,
+          "area": 400
+        }
+      ]
+    },
+    {
+      "image": "000000209753.jpg",
+      "sha256": "a5f1d3251846d66aee823f2c57f6538e0b64fd1b97e431114884db519209ca9f",
+      "visualization": "sample-02.jpg",
+      "decode_seconds": 0.0018994160054717213,
+      "dino_seconds": 0.35542095900018467,
+      "sam_seconds": 18.762688333998085,
+      "dino_boxes": [
+        [
+          0.53125,
+          0.484375,
+          0.8125,
+          0.84375
+        ],
+        [
+          0.5625,
+          0.859375,
+          0.875,
+          0.28125
+        ],
+        [
+          0.203125,
+          0.65625,
+          0.09375,
+          0.125
+        ],
+        [
+          0.359375,
+          0.640625,
+          0.15625,
+          0.09375
+        ],
+        [
+          0.4375,
+          0.765625,
+          0.125,
+          0.09375
+        ]
+      ],
+      "sam_boxes": [
+        [
+          0.8886509635974305,
+          0.6296875,
+          0.21413276231263378,
+          0.17812499999999998
+        ],
+        [
+          0.27408993576017127,
+          0.2125,
+          0.07708779443254815,
+          0.425
+        ],
+        [
+          0.1745182012847966,
+          0.32578125,
+          0.13062098501070663,
+          0.1328125
+        ],
+        [
+          0.7205567451820128,
+          0.43984375000000003,
+          0.12633832976445403,
+          0.12656250000000002
+        ],
+        [
+          0.20342612419700212,
+          0.33359375,
+          0.19271948608137043,
+          0.1515625
+        ],
+        [
+          0.6873661670235547,
+          0.43984375000000003,
+          0.19271948608137046,
+          0.12656250000000002
+        ],
+        [
+          0.06852248394004283,
+          0.54765625,
+          0.13704496788008566,
+          0.07656249999999998
+        ],
+        [
+          0.058886509635974305,
+          0.98203125,
+          0.11777301927194861,
+          0.035937499999999956
+        ],
+        [
+          0.9582441113490364,
+          0.77109375,
+          0.08351177730192716,
+          0.1171875
+        ],
+        [
+          0.9550321199143469,
+          0.58046875,
+          0.0813704496788008,
+          0.0546875
+        ]
+      ],
+      "sam_amg_count_before_shared_filter": 17,
+      "sam_mask_quality": [
+        {
+          "predicted_iou": 0.9689033031463623,
+          "stability_score": 0.9556471109390259,
+          "area": 8061
+        },
+        {
+          "predicted_iou": 0.9681156873703003,
+          "stability_score": 0.971861720085144,
+          "area": 8565
+        },
+        {
+          "predicted_iou": 0.967705488204956,
+          "stability_score": 0.964077889919281,
+          "area": 4889
+        },
+        {
+          "predicted_iou": 0.9645735621452332,
+          "stability_score": 0.9657257795333862,
+          "area": 2445
+        },
+        {
+          "predicted_iou": 0.9496412873268127,
+          "stability_score": 0.951460063457489,
+          "area": 5028
+        },
+        {
+          "predicted_iou": 0.9490785002708435,
+          "stability_score": 0.9623085856437683,
+          "area": 2505
+        },
+        {
+          "predicted_iou": 0.9364283084869385,
+          "stability_score": 0.9519485235214233,
+          "area": 2582
+        },
+        {
+          "predicted_iou": 0.9321290850639343,
+          "stability_score": 0.9836660623550415,
+          "area": 1093
+        },
+        {
+          "predicted_iou": 0.9275174736976624,
+          "stability_score": 0.9527449607849121,
+          "area": 1409
+        },
+        {
+          "predicted_iou": 0.9241933226585388,
+          "stability_score": 0.953046977519989,
+          "area": 977
+        }
+      ]
+    },
+    {
+      "image": "000000343524.jpg",
+      "sha256": "0f4f1fe24fe819690c356e0f4261ce6eace0e0ae4f478b5e4dce5c8d511e408b",
+      "visualization": "sample-03.jpg",
+      "decode_seconds": 0.001814457995351404,
+      "dino_seconds": 0.3527923750007176,
+      "sam_seconds": 17.80229354200128,
+      "dino_boxes": [
+        [
+          0.3125,
+          0.484375,
+          0.375,
+          0.84375
+        ],
+        [
+          0.671875,
+          0.15625,
+          0.65625,
+          0.25
+        ],
+        [
+          0.703125,
+          0.328125,
+          0.59375,
+          0.21875
+        ],
+        [
+          0.078125,
+          0.609375,
+          0.15625,
+          0.21875
+        ],
+        [
+          0.5,
+          0.921875,
+          0.1875,
+          0.15625
+        ],
+        [
+          0.078125,
+          0.328125,
+          0.15625,
+          0.09375
+        ],
+        [
+          0.265625,
+          0.75,
+          0.09375,
+          0.125
+        ]
+      ],
+      "sam_boxes": [
+        [
+          0.5,
+          0.1890380313199105,
+          1.0,
+          0.378076062639821
+        ],
+        [
+          0.37031250000000004,
+          0.8512304250559284,
+          0.07500000000000001,
+          0.08277404921700227
+        ],
+        [
+          0.228125,
+          0.5492170022371365,
+          0.14999999999999997,
+          0.1588366890380314
+        ],
+        [
+          0.5,
+          0.3668903803131991,
+          1.0,
+          0.7337807606263982
+        ]
+      ],
+      "sam_amg_count_before_shared_filter": 5,
+      "sam_mask_quality": [
+        {
+          "predicted_iou": 0.9800350666046143,
+          "stability_score": 0.9682539701461792,
+          "area": 50059
+        },
+        {
+          "predicted_iou": 0.9235391020774841,
+          "stability_score": 0.951307475566864,
+          "area": 1087
+        },
+        {
+          "predicted_iou": 0.8712230920791626,
+          "stability_score": 0.9596948027610779,
+          "area": 5011
+        },
+        {
+          "predicted_iou": 0.8286150693893433,
+          "stability_score": 0.9539961218833923,
+          "area": 50597
+        }
+      ]
+    },
+    {
+      "image": "000000501243.jpg",
+      "sha256": "563be53973f8385eb1927f5f1ca5c4732272566a45000db7a21f99501ec5e233",
+      "visualization": "sample-04.jpg",
+      "decode_seconds": 0.0029185829989728518,
+      "dino_seconds": 0.287501875005546,
+      "sam_seconds": 17.870488208005554,
+      "dino_boxes": [
+        [
+          0.5,
+          0.515625,
+          0.8125,
+          0.59375
+        ]
+      ],
+      "sam_boxes": [
+        [
+          0.05078125,
+          0.06674473067915691,
+          0.032812499999999994,
+          0.13348946135831383
+        ],
+        [
+          0.0265625,
+          0.4742388758782201,
+          0.053125,
+          0.1615925058548009
+        ],
+        [
+          0.0140625,
+          0.4730679156908665,
+          0.028125,
+          0.15925058548009363
+        ]
+      ],
+      "sam_amg_count_before_shared_filter": 10,
+      "sam_mask_quality": [
+        {
+          "predicted_iou": 0.9364287257194519,
+          "stability_score": 0.9784615635871887,
+          "area": 963
+        },
+        {
+          "predicted_iou": 0.8746013045310974,
+          "stability_score": 0.9628297090530396,
+          "area": 816
+        },
+        {
+          "predicted_iou": 0.869503378868103,
+          "stability_score": 0.9599359035491943,
+          "area": 613
+        }
+      ]
+    },
+    {
+      "image": "000000073533.jpg",
+      "sha256": "6e49483e35cd110eea21970e066ba7101bac0e41327723fb9f142e62443ab3aa",
+      "visualization": "sample-05.jpg",
+      "decode_seconds": 0.002360582999244798,
+      "dino_seconds": 0.2906617080006981,
+      "sam_seconds": 17.996763290997478,
+      "dino_boxes": [
+        [
+          0.5,
+          0.5625,
+          1.0,
+          0.875
+        ]
+      ],
+      "sam_boxes": [
+        [
+          0.98203125,
+          0.384375,
+          0.035937499999999956,
+          0.2729166666666667
+        ],
+        [
+          0.93671875,
+          0.6760416666666667,
+          0.12656250000000002,
+          0.31875
+        ],
+        [
+          0.41328125000000004,
+          0.375,
+          0.03593750000000001,
+          0.15416666666666667
+        ],
+        [
+          0.5140625,
+          0.7197916666666666,
+          0.971875,
+          0.41041666666666676
+        ],
+        [
+          0.06875,
+          0.975,
+          0.1375,
+          0.050000000000000044
+        ],
+        [
+          0.0859375,
+          0.453125,
+          0.056249999999999994,
+          0.20625000000000004
+        ],
+        [
+          0.51328125,
+          0.3979166666666667,
+          0.06406249999999997,
+          0.21666666666666662
+        ],
+        [
+          0.0234375,
+          0.5052083333333334,
+          0.046875,
+          0.29791666666666666
+        ],
+        [
+          0.44375,
+          0.4,
+          0.08749999999999997,
+          0.21249999999999997
+        ],
+        [
+          0.2625,
+          0.23229166666666667,
+          0.275,
+          0.3354166666666667
+        ],
+        [
+          0.96484375,
+          0.38645833333333335,
+          0.026562500000000044,
+          0.27708333333333335
+        ],
+        [
+          0.20625,
+          0.209375,
+          0.4125,
+          0.08124999999999999
+        ],
+        [
+          0.27890624999999997,
+          0.6947916666666667,
+          0.5296875,
+          0.5104166666666666
+        ],
+        [
+          0.06328125,
+          0.209375,
+          0.1265625,
+          0.08124999999999999
+        ],
+        [
+          0.659375,
+          0.24479166666666666,
+          0.259375,
+          0.33541666666666664
+        ],
+        [
+          0.88515625,
+          0.17291666666666666,
+          0.22968750000000004,
+          0.11666666666666668
+        ],
+        [
+          0.6773437499999999,
+          0.7395833333333334,
+          0.23281249999999998,
+          0.18333333333333335
+        ],
+        [
+          0.0640625,
+          0.23229166666666667,
+          0.128125,
+          0.12708333333333333
+        ],
+        [
+          0.89375,
+          0.22395833333333334,
+          0.21250000000000002,
+          0.07708333333333334
+        ],
+        [
+          0.06640625,
+          0.2864583333333333,
+          0.1328125,
+          0.08541666666666667
+        ],
+        [
+          0.9320312500000001,
+          0.396875,
+          0.06406250000000002,
+          0.28541666666666665
+        ]
+      ],
+      "sam_amg_count_before_shared_filter": 21,
+      "sam_mask_quality": [
+        {
+          "predicted_iou": 0.9744182825088501,
+          "stability_score": 0.9781420826911926,
+          "area": 2350
+        },
+        {
+          "predicted_iou": 0.9578439593315125,
+          "stability_score": 0.9714794754981995,
+          "area": 8298
+        },
+        {
+          "predicted_iou": 0.9572291970252991,
+          "stability_score": 0.9596167206764221,
+          "area": 1433
+        },
+        {
+          "predicted_iou": 0.9548108577728271,
+          "stability_score": 0.9653459787368774,
+          "area": 8294
+        },
+        {
+          "predicted_iou": 0.9476421475410461,
+          "stability_score": 0.9805137515068054,
+          "area": 1121
+        },
+        {
+          "predicted_iou": 0.9469722509384155,
+          "stability_score": 0.9671968221664429,
+          "area": 2964
+        },
+        {
+          "predicted_iou": 0.9455299973487854,
+          "stability_score": 0.9607638716697693,
+          "area": 2830
+        },
+        {
+          "predicted_iou": 0.9431456327438354,
+          "stability_score": 0.9715457558631897,
+          "area": 3844
+        },
+        {
+          "predicted_iou": 0.938334584236145,
+          "stability_score": 0.9504080414772034,
+          "area": 3092
+        },
+        {
+          "predicted_iou": 0.9361883401870728,
+          "stability_score": 0.9717438220977783,
+          "area": 20539
+        },
+        {
+          "predicted_iou": 0.9292722940444946,
+          "stability_score": 0.9580292105674744,
+          "area": 1072
+        },
+        {
+          "predicted_iou": 0.923930287361145,
+          "stability_score": 0.9564180970191956,
+          "area": 2866
+        },
+        {
+          "predicted_iou": 0.9194825887680054,
+          "stability_score": 0.9597099423408508,
+          "area": 50195
+        },
+        {
+          "predicted_iou": 0.9142261147499084,
+          "stability_score": 0.9548999667167664,
+          "area": 2874
+        },
+        {
+          "predicted_iou": 0.9072061777114868,
+          "stability_score": 0.964422881603241,
+          "area": 21231
+        },
+        {
+          "predicted_iou": 0.9017457365989685,
+          "stability_score": 0.9560180306434631,
+          "area": 4544
+        },
+        {
+          "predicted_iou": 0.89532071352005,
+          "stability_score": 0.9523752331733704,
+          "area": 8092
+        },
+        {
+          "predicted_iou": 0.8882011771202087,
+          "stability_score": 0.9549305438995361,
+          "area": 2869
+        },
+        {
+          "predicted_iou": 0.8871285915374756,
+          "stability_score": 0.9635922312736511,
+          "area": 4051
+        },
+        {
+          "predicted_iou": 0.879550039768219,
+          "stability_score": 0.959463894367218,
+          "area": 2995
+        },
+        {
+          "predicted_iou": 0.8441582322120667,
+          "stability_score": 0.9598168730735779,
+          "area": 1927
+        }
+      ]
+    }
+  ],
+  "dino": {
+    "model": "dino_vits16",
+    "parameters": 21665664,
+    "patch_size": 16,
+    "feature_type": "last_attention_keys",
+    "frozen": true,
+    "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+    "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+    "device": "cpu",
+    "mixed_precision": false,
+    "resolution": 512,
+    "amp_float32_retry_batches": 0
+  },
+  "sam": {
+    "model": "SAM 2.1 Hiera-Tiny",
+    "parameters": 38962498,
+    "source_revision": "2b90b9f5ceec907a1c18123530e92e794ad901a4",
+    "checkpoint_url": "https://dl.fbaipublicfiles.com/segment_anything_2/092824/sam2.1_hiera_tiny.pt",
+    "checkpoint_sha256": "7402e0d864fa82708a20fbd15bc84245c2f26dff0eb43a4b5b93452deb34be69",
+    "model_config": "configs/sam2.1/sam2.1_hiera_t.yaml",
+    "resolution": 1024,
+    "device": "cpu",
+    "precision": "float32",
+    "amg": {
+      "points_per_side": 32,
+      "points_per_batch": 16,
+      "pred_iou_thresh": 0.8,
+      "stability_score_thresh": 0.95,
+      "box_nms_thresh": 0.7,
+      "crop_n_layers": 0,
+      "min_mask_region_area": 0,
+      "output_mode": "binary_mask",
+      "use_m2m": false
+    },
+    "apply_postprocessing": false,
+    "torch_threads": 4
+  }
+}
