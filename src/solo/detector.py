@@ -22,6 +22,11 @@ from .storage import atomic_write, output_lock, sha256_file, write_json
 from .system_info import effective_cpus, system_info
 
 
+def adapter_path(config: Config) -> Path:
+    name = "coco_yolo" if config.train.run_name == "coco-yolo11n" else config.train.run_name
+    return local_path(f"work/{name}_dataset")
+
+
 def _link(source: Path, destination: Path) -> None:
     if destination.is_symlink() and os.readlink(destination) == str(source):
         return
@@ -36,7 +41,7 @@ def _link(source: Path, destination: Path) -> None:
 
 def prepare_dataset(dataset: Path, config: Config, records: list[ImageRecord]) -> dict:
     output = local_path(config.pipeline.output_dir)
-    adapter = local_path("work/coco_yolo_dataset")
+    adapter = adapter_path(config)
     protect_dataset(dataset, output)
     protect_dataset(dataset, adapter)
     if not output.is_dir():
@@ -181,12 +186,12 @@ def _last_metrics(path: Path) -> dict:
 
 def train_detector(dataset: Path, config: Config) -> Path:
     dataset = dataset.resolve(strict=True)
-    output = local_path("outputs/coco-yolo11n")
-    report = local_path("reports") / "coco-yolo11n-training"
+    output = local_path(Path("outputs") / config.train.run_name)
+    report = local_path("reports") / f"{config.train.run_name}-training"
     for destination in (
         output,
         report,
-        local_path("work/coco_yolo_dataset"),
+        adapter_path(config),
         local_path("weights"),
     ):
         protect_dataset(dataset, destination)
@@ -206,25 +211,28 @@ def train_detector(dataset: Path, config: Config) -> Path:
                     "train": {
                         k: v
                         for k, v in config.to_dict()["train"].items()
-                        if k not in {"device", "batch_size", "workers", "progress_interval"}
+                        if k not in {
+                            "device", "batch_size", "workers", "progress_interval", "run_name",
+                        }
                     },
                 },
                 sort_keys=True,
             ).encode()
         ).hexdigest()
-        state_path = local_path("work/coco-train-state.json")
+        state_name = "coco" if config.train.run_name == "coco-yolo11n" else config.train.run_name
+        state_path = local_path(f"work/{state_name}-train-state.json")
         last = output / "weights/last.pt"
         if last.is_file() and not state_path.is_file():
             raise RuntimeError(
                 "Found a YOLO checkpoint without SOLO training state. "
-                "Move outputs/coco-yolo11n aside before starting a new run."
+                f"Move {output} aside before starting a new run."
             )
         if state_path.exists():
             state = json.loads(state_path.read_text())
             if state.get("identity") != identity:
                 raise RuntimeError(
                     "Existing training run uses different images or configuration. "
-                    "Preserve outputs/coco-yolo11n and work/coco-train-state.json, "
+                    f"Preserve {output} and {state_path}, "
                     "then remove them before starting a new run."
                 )
             if state.get("status") == "complete" and (output / "weights/best.pt").is_file():
@@ -295,7 +303,7 @@ def train_detector(dataset: Path, config: Config) -> Path:
                 seed=config.train.seed,
                 patience=config.train.patience,
                 project=str(local_path("outputs")),
-                name="coco-yolo11n",
+                name=config.train.run_name,
                 exist_ok=True,
                 resume=resume,
                 pretrained=False,

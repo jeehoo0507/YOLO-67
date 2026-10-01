@@ -26,6 +26,13 @@ class MaskCutConfig:
     min_mask_area: float = 0.01
     max_mask_iou: float = 0.5
     crf: bool = False
+    all_components: bool = False
+    split_depth: int = 0
+    split_min_patches: int = 8
+    split_temperature: float = 0.05
+    split_max_ncut: float = 0.15
+    split_min_cosine_distance: float = 0.1
+    max_instances: int = 24
 
 
 @dataclass(frozen=True)
@@ -64,6 +71,7 @@ class BenchmarkConfig:
 
 @dataclass(frozen=True)
 class TrainConfig:
+    run_name: str = "coco-yolo11n"
     epochs: int = 100
     image_size: int = 640
     batch_size: int = 16
@@ -88,11 +96,18 @@ class Config:
 
     def fingerprint(self, checkpoint_sha256: str) -> str:
         # Scheduling does not change annotations. Algorithm/schema changes must bump this version.
+        maskcut = asdict(self.maskcut)
+        enhanced = self.maskcut.all_components or self.maskcut.split_depth > 0
+        if not enhanced:
+            # Preserve receipts and benchmark compatibility for the unchanged baseline.
+            maskcut = {k: v for k, v in maskcut.items() if k in {
+                "tau", "epsilon", "max_objects", "min_mask_area", "max_mask_iou", "crf",
+            }}
         payload = {
-            "schema": "solo-pseudo-v1",
+            "schema": "solo-pseudo-instances-v1" if enhanced else "solo-pseudo-v1",
             "affinity_dtype": "float64",
             "dino": {k: v for k, v in asdict(self.dino).items() if k != "device"},
-            "maskcut": asdict(self.maskcut),
+            "maskcut": maskcut,
             "filtering": asdict(self.filtering),
             "checkpoint_sha256": checkpoint_sha256,
         }
@@ -137,6 +152,16 @@ def validate(c: Config) -> None:
         raise ValueError("Invalid MaskCut graph parameters")
     if c.maskcut.max_objects < 1:
         raise ValueError("max_objects must be positive")
+    m = c.maskcut
+    if (not 0 <= m.split_depth <= 4 or m.split_min_patches < 2
+            or (m.split_depth and m.max_instances < m.max_objects)):
+        raise ValueError(
+            "Require split_depth in 0..4, split_min_patches >=2, max_instances >= max_objects"
+        )
+    if not 0 < m.split_temperature <= 1 or not 0 < m.split_max_ncut < 2:
+        raise ValueError("Invalid split temperature / normalized-cut threshold")
+    if not 0 < m.split_min_cosine_distance <= 2:
+        raise ValueError("split_min_cosine_distance must lie in (0,2]")
     for value in (c.maskcut.min_mask_area, c.maskcut.max_mask_iou, c.filtering.duplicate_iou):
         if not 0 <= value <= 1:
             raise ValueError("Area/IoU ratios must lie in [0,1]")
@@ -161,6 +186,10 @@ def validate(c: Config) -> None:
         raise ValueError("Invalid full-dataset estimate settings")
     local_path(c.pipeline.output_dir)
     t = c.train
+    if not t.run_name or any(
+        ch not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for ch in t.run_name
+    ):
+        raise ValueError("train.run_name must contain only lowercase letters, digits, - and _")
     if t.epochs < 1 or t.image_size < 32 or t.image_size % 32:
         raise ValueError("Training epochs must be positive; image_size must be a multiple of 32")
     if t.batch_size < 1 or t.workers < 0 or t.patience < 0 or t.progress_interval <= 0:

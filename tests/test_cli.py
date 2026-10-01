@@ -46,3 +46,16 @@ def test_predict_defaults_and_custom_image(monkeypatch):
     assert main(["predict", "/example/photo.jpg", "--conf", "0.1"]) == 0
     assert calls[1][0] == Path("/example/photo.jpg")
     assert calls[1][4] == 0.1
+
+
+def test_crowded_profile_selects_separate_checkpoint_and_comparison(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.prediction.predict_objects", lambda *args: calls.append(args))
+    assert main(["predict", "--crowded"]) == 0
+    assert calls[0][1] == ROOT / "outputs/coco-yolo11n-crowded/weights/best.pt"
+    monkeypatch.setattr("solo.comparison.compare", lambda *args: calls.append(args))
+    assert main(["compare"]) == 0
+    assert calls[1][2].maskcut.all_components
+    assert calls[1][2].maskcut.split_depth == 0
+    assert calls[1][3] == 16

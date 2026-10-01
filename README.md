@@ -48,6 +48,71 @@ git pull --ff-only
 `preview`는 저장된 DINO 박스를 원본 이미지 위에 그린 `reports/pseudo_preview.jpg`를
 만듭니다. DINO나 YOLO를 다시 실행하지 않습니다. `generate`도 완료 시 대표 grid를 저장합니다.
 
+## 여러 객체가 모인 장면: crowded 설정
+
+기존 baseline의 `384px / 최대 2개` 설정 외에 `--crowded`를 추가했습니다.
+**클래스는 계속 `0 = object`이며, 각 객체에 별도 박스를 만드는 것이 목표**입니다.
+
+- 같은 frozen DINO ViT-S/16을 512px에서 실행해 24×24 대신 **32×32 패치**를 사용합니다.
+- 최대 12개 마스크를 찾고, 전경 안에서 **떨어진 연결 영역을 각각 추출**합니다.
+- 작은 객체를 덜 버리도록 최소 mask/box 면적을 낮춥니다.
+- 특징 차이로 연결된 마스크를 추가 분할하는 옵션도 있지만 기본은 OFF입니다.
+  작은 공개 예제 비교에서 몸 일부가 별도 박스로 잘리는 사례가 있어 기본 적용하지 않았습니다.
+  완전히 붙거나 가려진 사람을 항상 개별 분리하는 방법은 아니며, 실제 군중 데이터의 검증이 필요합니다.
+
+먼저 **전체 데이터를 다시 만들기 전에** 같은 이미지의 전후 박스를 비교하세요:
+
+```bash
+git pull --ff-only
+./solo compare
+```
+
+기본 COCO val2017에서 deterministic 16장을 선택합니다. 문제가 나온 이미지들을
+`data/check/` 같은 폴더에 모으면 그 폴더로 비교할 수 있습니다:
+
+```bash
+./solo compare data/check --limit 16
+```
+
+`reports/<run-id>-compare-*/comparison.jpg`의 **왼쪽은 기존 baseline, 오른쪽은 crowded**입니다.
+JSON/CSV/summary에는 각 설정, 박스 수·면적 분포, 처리 시간, 하드웨어를 기록합니다.
+이 검사는 기존 pseudo-label이나 학습 가중치를 변경하지 않으며, 추가 다운로드는 기존 DINO
+가중치가 없는 경우에만 필요합니다. 작은 비교 실행의 속도는 10k benchmark를 대체하지 않습니다.
+박스가 많다는 것만으로 성공은 아닙니다. **사람별 박스, 몸 일부의 중복 검출, 배경 박스, 누락**을
+함께 확인하세요. `--limit`은 1~64입니다.
+
+분리 품질을 확인한 뒤 새 설정으로 benchmark → 전체 라벨 생성 → 새 YOLO 학습을 실행합니다:
+
+```bash
+./solo benchmark --crowded && ./solo generate --crowded && ./solo train --crowded
+./solo preview --crowded
+./solo predict --crowded
+```
+
+이미 다운로드한 COCO 이미지를 그대로 사용합니다. `--crowded`는
+[configs/crowded.toml](configs/crowded.toml)의 별칭이고, 생략하면 기존 baseline을 사용합니다.
+새 설정은 처리 비용이 더 크므로 기존 benchmark의 batch/worker 설정을 재사용하지 않습니다.
+라벨이 달라지므로 **기존 YOLO를 이어 학습하지 않고 별도 무작위 초기화 학습**을 시작합니다.
+
+```text
+pseudo/coco-crowded/                             # 새 학습 라벨
+outputs/coco-yolo11n-crowded/weights/best.pt        # 새 YOLO 가중치
+reports/coco-yolo11n-crowded-training/             # 새 학습 리포트
+reports/pseudo_preview_coco-yolo11n-crowded.jpg     # 새 라벨 프리뷰
+```
+
+기존 `pseudo/coco/`, `outputs/coco-yolo11n/` 및 학습 재개 state는 보존합니다.
+새 학습 중단 후에는 `./solo train --crowded`로 이어갑니다.
+세부 옵션은 `[maskcut]`의 `max_objects`, `min_mask_area`, `all_components`입니다.
+실험용 재귀 분할은 `split_depth = 1` 이상으로 켜며 `split_max_ncut`과
+`split_min_cosine_distance`로 분할 허용 기준을 조절합니다. 영역이 충분히 크고,
+분할 비용이 낮고, 특징 차이가 있으며, 각 자식이 하나의 연결 영역일 때만 분할하지만
+**신체 부위 분할을 완전히 막지는 못합니다.** 변경 후에는 compare와 benchmark를 다시 실행하세요.
+실험마다 `[train].run_name`과 `[pipeline].output_dir`를 다르게 지정하면 결과를 보존할 수 있습니다.
+
+이 개선은 few-shot 매칭 전에 필요한 객체 후보를 만드는 단계입니다. 개인별 신원 구분이나
+support 예시와의 최종 매칭 성능은 아직 구현·검증되지 않았습니다.
+
 ## 학습한 YOLO 테스트
 
 학습이 끝나면 아래 명령으로 COCO 검증 이미지의 첫 16장에 **학습한 YOLO가 예측한 박스**를

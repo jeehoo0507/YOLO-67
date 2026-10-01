@@ -54,10 +54,17 @@ def test_training_adapter_links_valid_pseudo_labels_without_copy(tmp_path, monke
         prepare_dataset(dataset.resolve(), config, records)
 
 
-def test_train_starts_from_random_yolo11n_and_reports_eta(tmp_path, monkeypatch, capsys):
+@pytest.mark.parametrize("run_name", ["coco-yolo11n", "coco-yolo11n-crowded"])
+def test_train_starts_from_random_yolo11n_and_reports_eta(tmp_path, monkeypatch, capsys, run_name):
+    from dataclasses import replace
+
     dataset = tmp_path / "source"
     dataset.mkdir()
-    output = tmp_path / "outputs/coco-yolo11n"
+    output = tmp_path / "outputs" / run_name
+    legacy_state = tmp_path / "work/coco-train-state.json"
+    if run_name != "coco-yolo11n":
+        legacy_state.parent.mkdir()
+        legacy_state.write_bytes(b"existing baseline state must not be touched")
     seen = {}
 
     class FakeYOLO:
@@ -100,14 +107,21 @@ def test_train_starts_from_random_yolo11n_and_reports_eta(tmp_path, monkeypatch,
     monkeypatch.setattr("solo.detector.system_info", lambda: {"gpus": []})
     monkeypatch.setattr("solo.detector.git_context", lambda: {"commit_sha": "test"})
 
-    report = train_detector(dataset, Config())
+    config = Config()
+    config = replace(config, train=replace(config.train, run_name=run_name))
+    report = train_detector(dataset, config)
     assert seen["model"] == "yolo11n.yaml"
     assert seen["kwargs"]["amp"] is False
     assert seen["kwargs"]["pretrained"] is False
     assert seen["kwargs"]["resume"] is False
+    assert seen["kwargs"]["name"] == run_name
     assert "ETA ~" in capsys.readouterr().out
     assert (
         json.loads((report / "training.json").read_text())["initialization"]
         == "random initialization"
     )
-    assert json.loads((tmp_path / "work/coco-train-state.json").read_text())["status"] == "complete"
+    state_name = "coco" if run_name == "coco-yolo11n" else run_name
+    state = json.loads((tmp_path / f"work/{state_name}-train-state.json").read_text())
+    assert state["status"] == "complete"
+    if run_name != "coco-yolo11n":
+        assert legacy_state.read_bytes() == b"existing baseline state must not be touched"

@@ -171,7 +171,10 @@ def create_preview(dataset: Path, config: Config) -> Path:
 
     dataset = dataset.resolve(strict=True)
     labels = local_path(config.pipeline.output_dir)
-    path = local_path("reports/pseudo_preview.jpg")
+    name = "pseudo_preview" if config.train.run_name == "coco-yolo11n" else (
+        f"pseudo_preview_{config.train.run_name}"
+    )
+    path = local_path(f"reports/{name}.jpg")
     protect_dataset(dataset, labels)
     protect_dataset(dataset, path.parent)
     if not labels.is_dir():

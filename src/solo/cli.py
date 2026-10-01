@@ -8,11 +8,27 @@ from pathlib import Path
 from .config import ROOT, load_config
 
 
+def config_arguments(parser: argparse.ArgumentParser) -> None:
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+    group.add_argument(
+        "--crowded", dest="config", action="store_const", const=ROOT / "configs/crowded.toml",
+        help="Use the crowded-scene profile with separate labels and trained weights",
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="./solo", description="SOLO: COCO images → DINO/MaskCut boxes → YOLO object detector"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    comparison = commands.add_parser("compare", help="Compare baseline/crowded pseudo boxes")
+    comparison.add_argument(
+        "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
+    )
+    comparison.add_argument("--limit", type=int, default=16)
+    comparison.add_argument("--config", type=Path, default=ROOT / "configs/crowded.toml")
+    comparison.add_argument("--baseline", type=Path, default=ROOT / "configs/baseline.toml")
     for name in ("benchmark", "generate", "preview"):
         command = commands.add_parser(name)
         command.add_argument(
@@ -22,7 +38,7 @@ def main(argv: list[str] | None = None) -> int:
             default=ROOT / "data/coco/images",
             help="Image directory (default: data/coco/images inside this repository)",
         )
-        command.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+        config_arguments(command)
     download = commands.add_parser("download", help="Prepare a 100k-image ImageNet-1K sample")
     download.add_argument(
         "--archive", type=Path, help="Extract an existing official ILSVRC2012_img_train.tar"
@@ -49,14 +65,14 @@ def main(argv: list[str] | None = None) -> int:
         default=ROOT / "data/coco/images",
         help="Image directory used for ./solo generate",
     )
-    train.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+    config_arguments(train)
     predict = commands.add_parser("predict", help="Test trained YOLO and save object box images")
     predict.add_argument(
         "source", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
         help="Image or directory (default: COCO val2017)",
     )
     predict.add_argument(
-        "--weights", type=Path, default=ROOT / "outputs/coco-yolo11n/weights/best.pt",
+        "--weights", type=Path, help="Checkpoint (default: configured training run best.pt)",
     )
     predict.add_argument(
         "--limit", type=int, default=16, help="Image limit; 0 means all (default: 16)",
@@ -64,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
     predict.add_argument(
         "--conf", type=float, default=0.25, help="Confidence threshold (default: 0.25)",
     )
-    predict.add_argument("--config", type=Path, default=ROOT / "configs/baseline.toml")
+    config_arguments(predict)
     infer = commands.add_parser("infer", help="Reserved for Milestone 3: few-shot ROI matching")
     infer.add_argument("--support", type=Path)
     infer.add_argument("--query", type=Path)
@@ -93,7 +109,11 @@ def main(argv: list[str] | None = None) -> int:
             download_coco()
         else:
             config = load_config(args.config)
-            if args.command == "benchmark":
+            if args.command == "compare":
+                from .comparison import compare
+
+                compare(args.dataset, load_config(args.baseline), config, args.limit)
+            elif args.command == "benchmark":
                 from .benchmark import benchmark
 
                 benchmark(args.dataset, config)
@@ -108,7 +128,10 @@ def main(argv: list[str] | None = None) -> int:
             elif args.command == "predict":
                 from .prediction import predict_objects
 
-                predict_objects(args.source, args.weights, config, args.limit, args.conf)
+                weights = args.weights or (
+                    ROOT / "outputs" / config.train.run_name / "weights/best.pt"
+                )
+                predict_objects(args.source, weights, config, args.limit, args.conf)
             else:
                 from .reporting import create_preview
 
