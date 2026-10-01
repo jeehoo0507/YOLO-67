@@ -1,0 +1,25 @@
+{
+  "sources": {
+    "demo1.jpg": {
+      "origin": "https://github.com/facebookresearch/CutLER/blob/cca0a270cf68399efc8fd50df426b6d806e39416/maskcut/imgs/demo1.jpg",
+      "sha256": "26791b0963a272f39708b12ab5939372755242d38b6a0b4a16f690f3315d1346"
+    },
+    "bus.jpg": {
+      "origin": "Bundled ultralytics-opencv-headless==8.3.242 asset ultralytics/assets/bus.jpg",
+      "sha256": "c02019c4979c191eb739ddd944445ef408dad5679acab6fd520ef9d434bfbc63"
+    },
+    "demo3.jpg": {
+      "origin": "https://github.com/facebookresearch/CutLER/blob/cca0a270cf68399efc8fd50df426b6d806e39416/maskcut/imgs/demo3.jpg",
+      "sha256": "beb32643e1c3374ad3caf3bb7daa9f28521a30bbb499cd177a4c45ba4e62c27a"
+    },
+    "demo2.jpg": {
+      "origin": "https://github.com/facebookresearch/CutLER/blob/cca0a270cf68399efc8fd50df426b6d806e39416/maskcut/imgs/demo2.jpg",
+      "sha256": "fafb2dbcab0fd3b9175d846e10abde31dc8cc15c295425527d75f90f882fe7e5"
+    },
+    "demo4.jpg": {
+      "origin": "https://github.com/facebookresearch/CutLER/blob/cca0a270cf68399efc8fd50df426b6d806e39416/maskcut/imgs/demo4.jpg",
+      "sha256": "6cd32d95d4953c0e486141e3e769aee5d7d1d46d07c2fe26fd0daf40e55e4f5d"
+    }
+  },
+  "scope": "Five-image comparison of actually executed frozen DINO v1/v2/v3 ViT-S models. CPU only; no scored ground truth."
+}
