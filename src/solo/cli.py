@@ -22,6 +22,12 @@ def main(argv: list[str] | None = None) -> int:
         prog="./solo", description="SOLO: COCO images → DINO/MaskCut boxes → YOLO object detector"
     )
     commands = parser.add_subparsers(dest="command", required=True)
+    keys = commands.add_parser("key-preview", help="Show original -> DINO keys -> masks -> boxes")
+    keys.add_argument(
+        "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
+    )
+    keys.add_argument("--limit", type=int, default=5)
+    config_arguments(keys)
     comparison = commands.add_parser("compare", help="Compare baseline/crowded pseudo boxes")
     comparison.add_argument(
         "dataset", type=Path, nargs="?", default=ROOT / "data/coco/images/val2017",
@@ -109,7 +115,11 @@ def main(argv: list[str] | None = None) -> int:
             download_coco()
         else:
             config = load_config(args.config)
-            if args.command == "compare":
+            if args.command == "key-preview":
+                from .key_preview import key_preview
+
+                key_preview(args.dataset, config, args.limit)
+            elif args.command == "compare":
                 from .comparison import compare
 
                 compare(args.dataset, load_config(args.baseline), config, args.limit)

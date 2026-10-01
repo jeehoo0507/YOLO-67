@@ -59,3 +59,14 @@ def test_crowded_profile_selects_separate_checkpoint_and_comparison(monkeypatch)
     assert calls[1][2].maskcut.all_components
     assert calls[1][2].maskcut.split_depth == 0
     assert calls[1][3] == 16
+
+
+def test_key_preview_uses_five_images_with_explicit_profile(monkeypatch):
+    calls = []
+    monkeypatch.setenv("SOLO_ROOT", str(ROOT))
+    monkeypatch.setattr("solo.key_preview.key_preview", lambda *args: calls.append(args))
+    assert main(["key-preview", "--crowded"]) == 0
+    assert calls[0][0] == ROOT / "data/coco/images/val2017"
+    assert calls[0][1].dino.model == "dino_vits16"
+    assert calls[0][1].dino.resolution == 512
+    assert calls[0][2] == 5

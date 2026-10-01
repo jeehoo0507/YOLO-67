@@ -113,6 +113,34 @@ reports/pseudo_preview_coco-yolo11n-crowded.jpg     # 새 라벨 프리뷰
 이 개선은 few-shot 매칭 전에 필요한 객체 후보를 만드는 단계입니다. 개인별 신원 구분이나
 support 예시와의 최종 매칭 성능은 아직 구현·검증되지 않았습니다.
 
+## DINO key 특징에서 박스까지 5장 시각화
+
+```bash
+./solo key-preview --crowded
+# 원하는 이미지 폴더:
+./solo key-preview data/check --crowded --limit 5
+```
+
+기본 COCO val2017에서 5장을 선택하여 `reports/<run-id>-key-preview-*/key_pipeline.jpg`에
+**원본 → key 특징 PCA RGB → MaskCut 마스크 → 필터링된 박스**를 저장합니다.
+이미지별 큰 그림은 `sample-01.jpg` 등이며, 실행한 모델·checkpoint SHA·설정·입력 SHA·박스
+좌표는 `features.json`에 기록합니다. 저장된 학습 라벨이나 YOLO 가중치는 바꾸지 않습니다.
+
+현재 backbone은 **DINO v1 ViT-S/16**입니다. 마지막 attention block의 key에서 CLS를 제외한
+384채널을 사용합니다. RGB 그림은 이미지마다 PCA 3성분으로 압축한 설명용 그림이며,
+**그 색을 이용해 박스를 만드는 것은 아닙니다.** MaskCut은 원래 384채널을 사용합니다.
+색은 클래스·신원·confidence가 아니며 이미지 간 같은 색이 같은 객체를 뜻하지 않습니다.
+마스크와 최종 박스의 색은 해당 이미지 안에서만 대응하고, 필터링된 마스크는 회색입니다.
+
+모델 선택: 지금의 key/MaskCut 기준선은 v1을 유지합니다. [DINOv2](https://github.com/facebookresearch/dinov2)는
+대규모 학습으로 다양한 도메인에서의 범용 특징을 강화했고,
+[DINOv3](https://ai.meta.com/research/publications/dinov3/)는 Gram anchoring 등으로 dense feature
+품질을 강화했습니다. 향후 few-shot ROI 특징 비교에서는 v3를 우선 비교할 후보로 봅니다.
+하지만 논문의 일반적인 dense 성능이 이 프로젝트의 **개별 객체 박스 품질**을 보증하지는
+않습니다. v2/v3를 같은 데이터에서 직접 비교한 결과는 아직 없고, v1이 최종 개인화 목표에
+충분하다고 확정한 것도 아닙니다. 특히 `crowded`는 배경·신체 일부를 추가 박스로 잡을 수
+있으므로 큰 학습을 시작하기 전에 실패 장면도 확인해야 합니다.
+
 ## 학습한 YOLO 테스트
 
 학습이 끝나면 아래 명령으로 COCO 검증 이미지의 첫 16장에 **학습한 YOLO가 예측한 박스**를
