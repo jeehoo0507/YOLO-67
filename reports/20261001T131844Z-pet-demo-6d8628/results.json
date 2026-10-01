@@ -1,0 +1,2030 @@
+{
+  "schema_version": 1,
+  "run_id": "20261001T131844Z-pet-demo-6d8628",
+  "kind": "pet-demo",
+  "status": "complete",
+  "created_utc": "2026-10-01T13:18:44.398031+00:00",
+  "git": {
+    "commit_sha": "c7a68be99d446bc817a9c36199094d8a0c965192",
+    "branch": "codex/milestone-1",
+    "dirty": false
+  },
+  "command": "./solo pet-demo",
+  "configuration": {
+    "resolution": 448,
+    "device": "cpu",
+    "dtype": "float32",
+    "dino_threads": 4,
+    "yolo": {
+      "weights_sha256": "0ebbc80d4a7680d14987a577cd21342b65ecfd94632bd9a8da63ae6417644ee1",
+      "imgsz": 640,
+      "conf": 0.25,
+      "iou": 0.7
+    },
+    "support": "one whole-image mean patch embedding per breed",
+    "query": "fractional mean ROI pooling of final LayerNorm patch tokens",
+    "matching": "cosine argmax among three breeds; no unknown rejection",
+    "evaluation": "highest-confidence YOLO dog proposal vs image breed; no IoU metric"
+  },
+  "system": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "cpu": "arm",
+    "physical_cores": 14,
+    "logical_cores": 14,
+    "effective_cpus": 14,
+    "ram_total_bytes": 51539607552,
+    "ram_available_bytes": 25107300352,
+    "python": "3.11.13 (main, Oct  7 2025, 16:08:14) [Clang 20.1.4 ]",
+    "python_executable": "/Users/choejihu/Documents/ChatGPT/SOLO/.venv/bin/python3",
+    "pytorch": "2.7.1",
+    "cuda_runtime": null,
+    "numpy": "2.2.6",
+    "scipy": "1.16.3",
+    "gpus": [],
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "nvidia_smi": "unavailable"
+  },
+  "dataset_root": "/Users/choejihu/Documents/ChatGPT/SOLO/data/pet-study",
+  "runs": [],
+  "warnings": [
+    "COCO-pretrained YOLO11n control, not a trained SOLO class-agnostic detector.",
+    "YOLO runs all classes; breed matching explicitly routes only its dog predictions.",
+    "Three visually distinct breeds, one support and three test photos per breed.",
+    "Breed recognition, NOT identity recognition of the same individual dog.",
+    "No reference boxes used; candidate presence is NOT ground-truth localization recall.",
+    "No verification of train/test animal identity or pretraining data overlap.",
+    "Known-three-class matching: unknown dogs/background rejection untested.",
+    "Synthetic collage is an extra diagnostic, excluded from the nine-photo metrics.",
+    "CPU demonstration only; not a throughput or field benchmark."
+  ],
+  "errors": [],
+  "timing_notes": "No throughput measurements; model forwards counted explicitly.",
+  "manifest": {
+    "dataset": "timm/oxford-iiit-pet",
+    "revision": "089695c834a7deb60505b7cc506672db1c31a6aa",
+    "source": "https://www.robots.ox.ac.uk/~vgg/data/pets/",
+    "license": "CC-BY-SA-4.0",
+    "selection": "First train row per selected breed for support; first three test rows per breed for query, before inference. No outcome-based exclusions.",
+    "images": [
+      {
+        "id": "beagle_178",
+        "class": "beagle",
+        "label": 4,
+        "split": "train",
+        "row_index": 51,
+        "role": "support",
+        "file": "data/pet-study/beagle_178.jpg",
+        "sha256": "f872d47c3cffdcc03736856910500b8a4b4030096985cd3e59faafd5da310e98"
+      },
+      {
+        "id": "pug_123",
+        "class": "pug",
+        "label": 25,
+        "split": "train",
+        "row_index": 9,
+        "role": "support",
+        "file": "data/pet-study/pug_123.jpg",
+        "sha256": "fe935bcbc449cd2ce362b504c77bb0ed07093c37bfe9517cb6c44a75798e7310"
+      },
+      {
+        "id": "samoyed_127",
+        "class": "samoyed",
+        "label": 29,
+        "split": "train",
+        "row_index": 111,
+        "role": "support",
+        "file": "data/pet-study/samoyed_127.jpg",
+        "sha256": "1566d2f262450e0e8597dcda74b9618de275bbd5bd8a4030c5b7b0f5b93e5378"
+      },
+      {
+        "id": "beagle_44",
+        "class": "beagle",
+        "label": 4,
+        "split": "test",
+        "row_index": 115,
+        "role": "query",
+        "file": "data/pet-study/beagle_44.jpg",
+        "sha256": "4dc4e1f03952f1074f117a5598aca88695247c0ec43ab28d2ec28a4715ba8c87"
+      },
+      {
+        "id": "beagle_30",
+        "class": "beagle",
+        "label": 4,
+        "split": "test",
+        "row_index": 174,
+        "role": "query",
+        "file": "data/pet-study/beagle_30.jpg",
+        "sha256": "80e75acbfaecb5261f17dc2fa9a870bc70053092a8d6e85606018d7549e67ea3"
+      },
+      {
+        "id": "beagle_6",
+        "class": "beagle",
+        "label": 4,
+        "split": "test",
+        "row_index": 206,
+        "role": "query",
+        "file": "data/pet-study/beagle_6.jpg",
+        "sha256": "004c9f7cd2c15a9f0f4faa1582252da4ab703a144b7a2549704ee95b0090805d"
+      },
+      {
+        "id": "pug_57",
+        "class": "pug",
+        "label": 25,
+        "split": "test",
+        "row_index": 1,
+        "role": "query",
+        "file": "data/pet-study/pug_57.jpg",
+        "sha256": "c3ffdc25566ae138be7d76121c7225fba6879568739338b240b60d97181d2609"
+      },
+      {
+        "id": "pug_62",
+        "class": "pug",
+        "label": 25,
+        "split": "test",
+        "row_index": 170,
+        "role": "query",
+        "file": "data/pet-study/pug_62.jpg",
+        "sha256": "ecf42e6b754a08133f0649e6e70c31469ce11be866446fb7166b3a28dc41e06e"
+      },
+      {
+        "id": "pug_55",
+        "class": "pug",
+        "label": 25,
+        "split": "test",
+        "row_index": 200,
+        "role": "query",
+        "file": "data/pet-study/pug_55.jpg",
+        "sha256": "3a8c7a4b3f073eba4724fd84d9f3bd360b4ef33c65e6cfdb14abf151308157bc"
+      },
+      {
+        "id": "samoyed_80",
+        "class": "samoyed",
+        "label": 29,
+        "split": "test",
+        "row_index": 67,
+        "role": "query",
+        "file": "data/pet-study/samoyed_80.jpg",
+        "sha256": "7e72155c00bd1008c2b6b142f670753b0f3ddf50aabdabe42cd0d8328f432606"
+      },
+      {
+        "id": "samoyed_86",
+        "class": "samoyed",
+        "label": 29,
+        "split": "test",
+        "row_index": 153,
+        "role": "query",
+        "file": "data/pet-study/samoyed_86.jpg",
+        "sha256": "bb8dc9086cb84edda951c07a56aba345008c25046f9ebb3b1758b2a7faf7769e"
+      },
+      {
+        "id": "samoyed_196",
+        "class": "samoyed",
+        "label": 29,
+        "split": "test",
+        "row_index": 163,
+        "role": "query",
+        "file": "data/pet-study/samoyed_196.jpg",
+        "sha256": "45eb6d4f479d9a1284f2f79f9cc80d513d368bdd8fd6330c4c63b6b6851dba3a"
+      }
+    ]
+  },
+  "backbones": {
+    "v1": {
+      "model": "dino_vits16",
+      "parameters": 21665664,
+      "patch_size": 16,
+      "feature_type": "last_attention_keys",
+      "frozen": true,
+      "checkpoint_url": "https://dl.fbaipublicfiles.com/dino/dino_deitsmall16_pretrain/dino_deitsmall16_pretrain.pth",
+      "checkpoint_sha256": "1566d50496f27f52f07fea6094fa29b2fdd6fae89da65bdd3ebc3b24ef6b7eb7",
+      "device": "cpu",
+      "mixed_precision": false,
+      "resolution": 448,
+      "amp_float32_retry_batches": 0,
+      "version": "v1",
+      "grid": [
+        28,
+        28
+      ],
+      "prefix_tokens": 1,
+      "dtype": "float32",
+      "fused_attention": false
+    },
+    "v2": {
+      "model": "vit_small_patch14_dinov2.lvd142m",
+      "repository": "https://huggingface.co/timm/vit_small_patch14_dinov2.lvd142m",
+      "revision": "4610ca143709d58a633b6397a74412c2c3842454",
+      "checkpoint_sha256": "04d27f3400d059fc0cfd7d17dd1909a75bf3ea8fb3eeb48b97cb99e57ee20081",
+      "implementation": "timm 1.0.24",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "version": "v2",
+      "resolution": 448,
+      "patch_size": 14,
+      "grid": [
+        32,
+        32
+      ],
+      "prefix_tokens": 1,
+      "parameters": 22056192,
+      "device": "cpu",
+      "dtype": "float32",
+      "fused_attention": false
+    },
+    "v3": {
+      "model": "vit_small_patch16_dinov3.lvd1689m",
+      "repository": "https://huggingface.co/timm/vit_small_patch16_dinov3.lvd1689m",
+      "revision": "3bf4720a82ec2066db88137180ff1f83a675cef0",
+      "checkpoint_sha256": "2a1ec16ae28ffa07bc0ead0241ee7df9fc26451fe6f9f839b7b3afa0a906b040",
+      "implementation": "timm 1.0.24",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "version": "v3",
+      "resolution": 448,
+      "patch_size": 16,
+      "grid": [
+        28,
+        28
+      ],
+      "prefix_tokens": 5,
+      "parameters": 21586944,
+      "device": "cpu",
+      "dtype": "float32",
+      "fused_attention": false
+    }
+  },
+  "samples": [
+    {
+      "id": "beagle_44",
+      "version": "v1",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        },
+        {
+          "box": [
+            0.08855956047773361,
+            0.175131157040596,
+            0.17325010895729065,
+            0.317966103553772
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.2872832715511322
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7740718126296997,
+          "margin": 0.03687238693237305,
+          "scores": {
+            "beagle": 0.7371994256973267,
+            "pug": 0.7080702185630798,
+            "samoyed": 0.7740718126296997
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_30",
+      "version": "v1",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7804688215255737,
+          "margin": 0.03850054740905762,
+          "scores": {
+            "beagle": 0.7419682741165161,
+            "pug": 0.7155616879463196,
+            "samoyed": 0.7804688215255737
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_6",
+      "version": "v1",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7105456590652466,
+          "margin": 0.036608755588531494,
+          "scores": {
+            "beagle": 0.6739369034767151,
+            "pug": 0.6117558479309082,
+            "samoyed": 0.7105456590652466
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_57",
+      "version": "v1",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.706809401512146,
+          "margin": 0.03153425455093384,
+          "scores": {
+            "beagle": 0.706809401512146,
+            "pug": 0.6752751469612122,
+            "samoyed": 0.6710013747215271
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_62",
+      "version": "v1",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.6893389821052551,
+          "margin": 0.028323888778686523,
+          "scores": {
+            "beagle": 0.6610150933265686,
+            "pug": 0.6384919881820679,
+            "samoyed": 0.6893389821052551
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_55",
+      "version": "v1",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.752160906791687,
+          "margin": 0.0006939172744750977,
+          "scores": {
+            "beagle": 0.7514669895172119,
+            "pug": 0.724232017993927,
+            "samoyed": 0.752160906791687
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_80",
+      "version": "v1",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        },
+        {
+          "box": [
+            0.48584771156311035,
+            0.8003131747245789,
+            0.13282443583011627,
+            0.17680974304676056
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.3577742278575897
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.723233699798584,
+          "margin": 0.04294443130493164,
+          "scores": {
+            "beagle": 0.6802892684936523,
+            "pug": 0.679945707321167,
+            "samoyed": 0.723233699798584
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_86",
+      "version": "v1",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        },
+        {
+          "box": [
+            0.7774053812026978,
+            0.6691280603408813,
+            0.10322113335132599,
+            0.1827578842639923
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.5589717030525208
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.6905738115310669,
+          "margin": 0.013942897319793701,
+          "scores": {
+            "beagle": 0.6766309142112732,
+            "pug": 0.6604426503181458,
+            "samoyed": 0.6905738115310669
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_196",
+      "version": "v1",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        },
+        {
+          "box": [
+            0.1980275809764862,
+            0.45817089080810547,
+            0.10030289739370346,
+            0.08910320699214935
+          ],
+          "class_id": 32,
+          "label": "sports ball",
+          "confidence": 0.38974714279174805
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7768937945365906,
+          "margin": 0.10357815027236938,
+          "scores": {
+            "beagle": 0.6733156442642212,
+            "pug": 0.6167573928833008,
+            "samoyed": 0.7768937945365906
+          }
+        }
+      ]
+    },
+    {
+      "id": "collage",
+      "version": "v1",
+      "truth": "synthetic",
+      "yolo_all": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        },
+        {
+          "box": [
+            0.030963536351919174,
+            0.2726782262325287,
+            0.061500925570726395,
+            0.21442677080631256
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.46438321471214294
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.448643296957016,
+          "margin": 0.029951900243759155,
+          "scores": {
+            "beagle": 0.41869139671325684,
+            "pug": 0.32947057485580444,
+            "samoyed": 0.448643296957016
+          }
+        },
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.44705846905708313,
+          "margin": 0.016681015491485596,
+          "scores": {
+            "beagle": 0.44705846905708313,
+            "pug": 0.43037745356559753,
+            "samoyed": 0.36561721563339233
+          }
+        },
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.5327644348144531,
+          "margin": 0.08809000253677368,
+          "scores": {
+            "beagle": 0.40616655349731445,
+            "pug": 0.44467443227767944,
+            "samoyed": 0.5327644348144531
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_44",
+      "version": "v2",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        },
+        {
+          "box": [
+            0.08855956047773361,
+            0.175131157040596,
+            0.17325010895729065,
+            0.317966103553772
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.2872832715511322
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.609563946723938,
+          "margin": 0.2336062788963318,
+          "scores": {
+            "beagle": 0.609563946723938,
+            "pug": 0.3759576678276062,
+            "samoyed": 0.23079058527946472
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_30",
+      "version": "v2",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.4392301142215729,
+          "margin": 0.03358256816864014,
+          "scores": {
+            "beagle": 0.4392301142215729,
+            "pug": 0.40564754605293274,
+            "samoyed": 0.19749455153942108
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_6",
+      "version": "v2",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.4935939311981201,
+          "margin": 0.120013028383255,
+          "scores": {
+            "beagle": 0.4935939311981201,
+            "pug": 0.3735809028148651,
+            "samoyed": 0.22760817408561707
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_57",
+      "version": "v2",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.6266191005706787,
+          "margin": 0.2005615234375,
+          "scores": {
+            "beagle": 0.4260575771331787,
+            "pug": 0.6266191005706787,
+            "samoyed": 0.1987716257572174
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_62",
+      "version": "v2",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.563869833946228,
+          "margin": 0.17730110883712769,
+          "scores": {
+            "beagle": 0.38656872510910034,
+            "pug": 0.563869833946228,
+            "samoyed": 0.17282533645629883
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_55",
+      "version": "v2",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.7123918533325195,
+          "margin": 0.2724928557872772,
+          "scores": {
+            "beagle": 0.4398989975452423,
+            "pug": 0.7123918533325195,
+            "samoyed": 0.21894028782844543
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_80",
+      "version": "v2",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        },
+        {
+          "box": [
+            0.48584771156311035,
+            0.8003131747245789,
+            0.13282443583011627,
+            0.17680974304676056
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.3577742278575897
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.6454422473907471,
+          "margin": 0.3804923892021179,
+          "scores": {
+            "beagle": 0.18666206300258636,
+            "pug": 0.26494985818862915,
+            "samoyed": 0.6454422473907471
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_86",
+      "version": "v2",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        },
+        {
+          "box": [
+            0.7774053812026978,
+            0.6691280603408813,
+            0.10322113335132599,
+            0.1827578842639923
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.5589717030525208
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.6552824974060059,
+          "margin": 0.36285459995269775,
+          "scores": {
+            "beagle": 0.22377638518810272,
+            "pug": 0.2924278974533081,
+            "samoyed": 0.6552824974060059
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_196",
+      "version": "v2",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        },
+        {
+          "box": [
+            0.1980275809764862,
+            0.45817089080810547,
+            0.10030289739370346,
+            0.08910320699214935
+          ],
+          "class_id": 32,
+          "label": "sports ball",
+          "confidence": 0.38974714279174805
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7211170196533203,
+          "margin": 0.49802839756011963,
+          "scores": {
+            "beagle": 0.21286004781723022,
+            "pug": 0.22308862209320068,
+            "samoyed": 0.7211170196533203
+          }
+        }
+      ]
+    },
+    {
+      "id": "collage",
+      "version": "v2",
+      "truth": "synthetic",
+      "yolo_all": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        },
+        {
+          "box": [
+            0.030963536351919174,
+            0.2726782262325287,
+            0.061500925570726395,
+            0.21442677080631256
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.46438321471214294
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.5128128528594971,
+          "margin": 0.16820970177650452,
+          "scores": {
+            "beagle": 0.34460315108299255,
+            "pug": 0.5128128528594971,
+            "samoyed": 0.22300581634044647
+          }
+        },
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.48725706338882446,
+          "margin": 0.19679167866706848,
+          "scores": {
+            "beagle": 0.20308993756771088,
+            "pug": 0.290465384721756,
+            "samoyed": 0.48725706338882446
+          }
+        },
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.448431134223938,
+          "margin": 0.09755688905715942,
+          "scores": {
+            "beagle": 0.448431134223938,
+            "pug": 0.35087424516677856,
+            "samoyed": 0.2079760581254959
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_44",
+      "version": "v3",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        },
+        {
+          "box": [
+            0.08855956047773361,
+            0.175131157040596,
+            0.17325010895729065,
+            0.317966103553772
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.2872832715511322
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.4715746343135834,
+            0.5587814450263977,
+            0.7102261781692505,
+            0.8606990575790405
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8714928030967712
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.7672020792961121,
+          "margin": 0.08742964267730713,
+          "scores": {
+            "beagle": 0.7672020792961121,
+            "pug": 0.6797724366188049,
+            "samoyed": 0.6502425074577332
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_30",
+      "version": "v3",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5289250016212463,
+            0.4636869430541992,
+            0.4542422294616699,
+            0.8460235595703125
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8935452103614807
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.7271997332572937,
+          "margin": 0.02143329381942749,
+          "scores": {
+            "beagle": 0.7057664394378662,
+            "pug": 0.7271997332572937,
+            "samoyed": 0.6960274577140808
+          }
+        }
+      ]
+    },
+    {
+      "id": "beagle_6",
+      "version": "v3",
+      "truth": "beagle",
+      "yolo_all": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.656040608882904,
+            0.6705783605575562,
+            0.4891185462474823,
+            0.43894755840301514
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9328148365020752
+        }
+      ],
+      "predictions": [
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.717214047908783,
+          "margin": 0.05526691675186157,
+          "scores": {
+            "beagle": 0.717214047908783,
+            "pug": 0.6619471311569214,
+            "samoyed": 0.658470630645752
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_57",
+      "version": "v3",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6942824721336365,
+            0.6137076020240784,
+            0.6104413866996765,
+            0.7426546812057495
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9279826879501343
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.7742314338684082,
+          "margin": 0.09325003623962402,
+          "scores": {
+            "beagle": 0.6809813976287842,
+            "pug": 0.7742314338684082,
+            "samoyed": 0.6787340044975281
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_62",
+      "version": "v3",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5973169207572937,
+            0.6064479947090149,
+            0.6554139256477356,
+            0.7871040105819702
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8818657994270325
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.7392887473106384,
+          "margin": 0.08542311191558838,
+          "scores": {
+            "beagle": 0.653347373008728,
+            "pug": 0.7392887473106384,
+            "samoyed": 0.65386563539505
+          }
+        }
+      ]
+    },
+    {
+      "id": "pug_55",
+      "version": "v3",
+      "truth": "pug",
+      "yolo_all": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5904501080513,
+            0.5043275952339172,
+            0.5826541781425476,
+            0.9810757040977478
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.9259310960769653
+        }
+      ],
+      "predictions": [
+        {
+          "label": "pug",
+          "top1_label": "pug",
+          "cosine": 0.8030944466590881,
+          "margin": 0.11115032434463501,
+          "scores": {
+            "beagle": 0.6919441223144531,
+            "pug": 0.8030944466590881,
+            "samoyed": 0.6622151732444763
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_80",
+      "version": "v3",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        },
+        {
+          "box": [
+            0.48584771156311035,
+            0.8003131747245789,
+            0.13282443583011627,
+            0.17680974304676056
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.3577742278575897
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.41533657908439636,
+            0.49647074937820435,
+            0.8284392952919006,
+            0.9872676730155945
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7825957536697388
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7766485214233398,
+          "margin": 0.166631817817688,
+          "scores": {
+            "beagle": 0.5479311943054199,
+            "pug": 0.6100167036056519,
+            "samoyed": 0.7766485214233398
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_86",
+      "version": "v3",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        },
+        {
+          "box": [
+            0.7774053812026978,
+            0.6691280603408813,
+            0.10322113335132599,
+            0.1827578842639923
+          ],
+          "class_id": 27,
+          "label": "tie",
+          "confidence": 0.5589717030525208
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.6801004409790039,
+            0.5658567547798157,
+            0.6396244168281555,
+            0.8506214618682861
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7693320512771606
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.8287626504898071,
+          "margin": 0.17718464136123657,
+          "scores": {
+            "beagle": 0.5828953981399536,
+            "pug": 0.6515780091285706,
+            "samoyed": 0.8287626504898071
+          }
+        }
+      ]
+    },
+    {
+      "id": "samoyed_196",
+      "version": "v3",
+      "truth": "samoyed",
+      "yolo_all": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        },
+        {
+          "box": [
+            0.1980275809764862,
+            0.45817089080810547,
+            0.10030289739370346,
+            0.08910320699214935
+          ],
+          "class_id": 32,
+          "label": "sports ball",
+          "confidence": 0.38974714279174805
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5778151750564575,
+            0.5615342855453491,
+            0.5800198912620544,
+            0.6147786378860474
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8720923066139221
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.8552331328392029,
+          "margin": 0.19447141885757446,
+          "scores": {
+            "beagle": 0.6398876309394836,
+            "pug": 0.6607617139816284,
+            "samoyed": 0.8552331328392029
+          }
+        }
+      ]
+    },
+    {
+      "id": "collage",
+      "version": "v3",
+      "truth": "synthetic",
+      "yolo_all": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        },
+        {
+          "box": [
+            0.030963536351919174,
+            0.2726782262325287,
+            0.061500925570726395,
+            0.21442677080631256
+          ],
+          "class_id": 56,
+          "label": "chair",
+          "confidence": 0.46438321471214294
+        }
+      ],
+      "dogs": [
+        {
+          "box": [
+            0.5625712871551514,
+            0.5786265730857849,
+            0.20813867449760437,
+            0.5005982518196106
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.8789140582084656
+        },
+        {
+          "box": [
+            0.8029634356498718,
+            0.4943733215332031,
+            0.2713431119918823,
+            0.6618098020553589
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7771633267402649
+        },
+        {
+          "box": [
+            0.15920184552669525,
+            0.5389255285263062,
+            0.23499147593975067,
+            0.5792148113250732
+          ],
+          "class_id": 16,
+          "label": "dog",
+          "confidence": 0.7419910430908203
+        }
+      ],
+      "predictions": [
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7046251893043518,
+          "margin": 0.007860064506530762,
+          "scores": {
+            "beagle": 0.6491976380348206,
+            "pug": 0.696765124797821,
+            "samoyed": 0.7046251893043518
+          }
+        },
+        {
+          "label": "samoyed",
+          "top1_label": "samoyed",
+          "cosine": 0.7276789546012878,
+          "margin": 0.15061432123184204,
+          "scores": {
+            "beagle": 0.5164524912834167,
+            "pug": 0.5770646333694458,
+            "samoyed": 0.7276789546012878
+          }
+        },
+        {
+          "label": "beagle",
+          "top1_label": "beagle",
+          "cosine": 0.680655837059021,
+          "margin": 0.03560173511505127,
+          "scores": {
+            "beagle": 0.680655837059021,
+            "pug": 0.6406983733177185,
+            "samoyed": 0.6450541019439697
+          }
+        }
+      ]
+    }
+  ],
+  "metrics": {
+    "v1": {
+      "query_photos": 9,
+      "photos_with_dog_candidate": 9,
+      "top_dog_correct_breed": 3,
+      "by_class": {
+        "beagle": {
+          "total": 3,
+          "correct": 0
+        },
+        "pug": {
+          "total": 3,
+          "correct": 0
+        },
+        "samoyed": {
+          "total": 3,
+          "correct": 3
+        }
+      }
+    },
+    "v2": {
+      "query_photos": 9,
+      "photos_with_dog_candidate": 9,
+      "top_dog_correct_breed": 9,
+      "by_class": {
+        "beagle": {
+          "total": 3,
+          "correct": 3
+        },
+        "pug": {
+          "total": 3,
+          "correct": 3
+        },
+        "samoyed": {
+          "total": 3,
+          "correct": 3
+        }
+      }
+    },
+    "v3": {
+      "query_photos": 9,
+      "photos_with_dog_candidate": 9,
+      "top_dog_correct_breed": 8,
+      "by_class": {
+        "beagle": {
+          "total": 3,
+          "correct": 2
+        },
+        "pug": {
+          "total": 3,
+          "correct": 3
+        },
+        "samoyed": {
+          "total": 3,
+          "correct": 3
+        }
+      }
+    }
+  },
+  "feature_forwards": {
+    "v1": 13,
+    "v2": 13,
+    "v3": 13
+  },
+  "collage_sources": [
+    "beagle_44",
+    "pug_57",
+    "samoyed_80"
+  ]
+}
